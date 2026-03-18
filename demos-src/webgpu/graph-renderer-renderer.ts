@@ -81,7 +81,7 @@ export async function setupGraphRenderer(device: GPUDevice) {
     }
   }
 
-  const aaMode = "msaa" as "none" | "msaa";
+  const aaMode = "none" as "none" | "msaa";
 
   const lines = await lineRenderer(
     device,
