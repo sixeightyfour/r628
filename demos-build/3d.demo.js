@@ -1,5 +1,5 @@
 (() => {
-  // src/math/vector.ts
+  // src/math/vector.generated.ts
   function cross(a, b) {
     return [
       a[1] * b[2] - a[2] * b[1],

@@ -293,7 +293,8 @@ export function createCombinedRoundRobinThreadpool<
     [K in keyof T]?: FunctionSerializer<T[K]>;
   },
 ): ReturnType<typeof createRoundRobinThreadpool<T>> {
-  if (eval("self.WorkerGlobalScope")) {
+  // @ts-expect-error
+  if (self.WorkerGlobalScope) {
     createRoundRobinThread(getInterface(false), serialization);
     return;
   } else {
@@ -309,7 +310,8 @@ export function createCombinedRoundRobinThreadpool<
 export async function inMainThread<T>(
   cb: () => T | Promise<T>,
 ): Promise<T | undefined> {
-  if (eval("self.WorkerGlobalScope")) {
+  // @ts-expect-error
+  if (self.WorkerGlobalScope) {
     return;
   }
 

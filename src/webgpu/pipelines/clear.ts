@@ -1,11 +1,11 @@
-import { Vec4 } from "../../math/vector";
+import { Vec4 } from "../../math/vector.generated";
 import { pipelineRenderpass, wrapDevice } from "../partial-pipelines";
 import { struct } from "../wgsl-struct-layout-generator";
 
 export async function clearRenderer(
   device: GPUDevice,
   outputFormat: GPUTextureFormat,
-  settings?: { multisample: GPUMultisampleState },
+  settings?: { multisample?: GPUMultisampleState },
 ) {
   const wdevice = wrapDevice(device);
 
@@ -85,7 +85,7 @@ export async function clearRenderer(
 
   const pass = device.createRenderBundleEncoder({
     colorFormats: [outputFormat],
-    sampleCount: settings?.multisample.count,
+    sampleCount: settings?.multisample?.count,
   });
 
   pass.setPipeline(pipeline);

@@ -9,7 +9,7 @@ import {
   sub3,
   Vec2,
   Vec3,
-} from "../math/vector";
+} from "../math/vector.generated";
 
 /*
 float sdBezier( in vec2 pos, in vec2 A, in vec2 B, in vec2 C )
@@ -135,19 +135,19 @@ export function sdBezier(pos: Vec2, A: Vec2, B: Vec2, C: Vec2) {
     const t = clamp3(
       sub3(scale3([m + m, -n - m, n - m], z), [kx, kx, kx]),
       0,
-      1
+      1,
     );
     //     res = min( dot2(d+(c+b*t.x)*t.x),
     //                dot2(d+(c+b*t.y)*t.y) );
     res = Math.min(
       dotself2(add2(d, scale2(add2(c, scale2(b, t[0])), t[0]))),
-      dotself2(add2(d, scale2(add2(c, scale2(b, t[1])), t[1])))
+      dotself2(add2(d, scale2(add2(c, scale2(b, t[1])), t[1]))),
     );
     //     // the third root cannot be the closest
     //     // res = min(res,dot2(d+(c+b*t.z)*t.z));
     res = Math.min(
       res,
-      dotself2(add2(d, scale2(add2(c, scale2(b, t[2])), t[2])))
+      dotself2(add2(d, scale2(add2(c, scale2(b, t[2])), t[2]))),
     );
     // }
   }
@@ -163,7 +163,7 @@ export type BezierQuadratic = {
 export function gradient2(
   fn: (v: Vec2) => number,
   pos: Vec2,
-  diff: number
+  diff: number,
 ): Vec2 {
   const a = fn(pos);
   const b = fn(add2(pos, [diff, 0]));
@@ -175,7 +175,7 @@ export function bezierifyFixedCount(
   path: Vec2[],
   count: number,
   learningRate: number,
-  gradientDescentIters: number
+  gradientDescentIters: number,
 ) {
   const beziers: BezierQuadratic[] = [];
 
@@ -189,8 +189,8 @@ export function bezierifyFixedCount(
         startIndex,
         endIndex,
         learningRate,
-        gradientDescentIters
-      ).bezier
+        gradientDescentIters,
+      ).bezier,
     );
   }
 
@@ -201,7 +201,7 @@ export function bezierAdaptive(
   path: Vec2[],
   maxError: number,
   learningRate: number,
-  gradientDescentIters: number
+  gradientDescentIters: number,
 ): BezierQuadratic[] {
   return bezierAdaptiveInner(
     path,
@@ -209,7 +209,7 @@ export function bezierAdaptive(
     0,
     path.length - 1,
     learningRate,
-    gradientDescentIters
+    gradientDescentIters,
   );
 }
 
@@ -219,14 +219,14 @@ export function bezierAdaptiveInner(
   startIndex: number,
   endIndex: number,
   learningRate: number,
-  gradientDescentIters: number
+  gradientDescentIters: number,
 ): BezierQuadratic[] {
   const approx = generateBezierApproximation(
     path,
     startIndex,
     endIndex,
     learningRate,
-    gradientDescentIters
+    gradientDescentIters,
   );
   if (approx.error <= maxError || endIndex - startIndex < 3)
     return [approx.bezier];
@@ -238,7 +238,7 @@ export function bezierAdaptiveInner(
       startIndex,
       mid,
       learningRate,
-      gradientDescentIters
+      gradientDescentIters,
     ),
     ...bezierAdaptiveInner(
       path,
@@ -246,7 +246,7 @@ export function bezierAdaptiveInner(
       mid,
       endIndex,
       learningRate,
-      gradientDescentIters
+      gradientDescentIters,
     ),
   ];
 }
@@ -256,13 +256,13 @@ function generateBezierApproximation(
   startIndex: number,
   endIndex: number,
   learningRate: number,
-  gradientDescentIters: number
+  gradientDescentIters: number,
 ): { bezier: BezierQuadratic; error: number } {
   const start = path[startIndex];
   const end = path[endIndex];
   let controlPoint = add2(
     scale2(add2(path[startIndex], path[endIndex]), 0.5),
-    [0.0001, 0.0001]
+    [0.0001, 0.0001],
   );
 
   const getError = (v: Vec2) => {
@@ -307,7 +307,7 @@ export function bezierPreview(beziers: BezierQuadratic[], size: number) {
       p.b[0] * size,
       p.b[1] * size,
       p.c[0] * size,
-      p.c[1] * size
+      p.c[1] * size,
     );
   }
   ctx.stroke();

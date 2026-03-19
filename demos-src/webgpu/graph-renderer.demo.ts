@@ -116,24 +116,26 @@ document.head.innerHTML += `<meta name="viewport"
   document.body.appendChild(ui.dom);
 
   async function loop(t) {
-    loadingMsg.style.display = "none";
+    if (!document.hidden) {
+      loadingMsg.style.display = "none";
 
-    let dt = (t - lastT) / 1000;
-    lastT = t;
+      let dt = (t - lastT) / 1000;
+      lastT = t;
 
-    graphRendererInstance.updateViewer(dt);
+      graphRendererInstance.updateViewer(dt);
 
-    physicsMode = ui.state.physics ? "physics" : "none";
+      physicsMode = ui.state.physics ? "physics" : "none";
 
-    if (physicsMode === "physics") {
-      graphRendererInstance.moveBodies();
+      if (physicsMode === "physics") {
+        graphRendererInstance.moveBodies();
+      }
+
+      graphRendererInstance.updateLabels();
+
+      graphRendererInstance.draw(lineMode);
+
+      loopIter++;
     }
-
-    graphRendererInstance.updateLabels();
-
-    graphRendererInstance.draw(lineMode);
-
-    loopIter++;
 
     // @ts-expect-error firefox is slow
     if (window.mozInnerScreenX) {

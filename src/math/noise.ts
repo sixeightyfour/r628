@@ -1,5 +1,5 @@
 import { lerp, smoothstep } from "../interpolation";
-import { add2, dot2, normalize2, sub2, Vec2 } from "./vector";
+import { add2, dot2, normalize2, sub2, Vec2 } from "./vector.generated";
 
 function fract(x: number): number {
   return x - Math.floor(x);
@@ -16,7 +16,7 @@ export function simpleRandVec2ToVec2(co: Vec2): Vec2 {
 
 export function perlin2d(
   p: Vec2,
-  randVec2: (pos: Vec2) => Vec2 = simpleRandVec2ToVec2
+  randVec2: (pos: Vec2) => Vec2 = simpleRandVec2ToVec2,
 ) {
   const fp: Vec2 = [Math.floor(p[0]), Math.floor(p[1])];
 

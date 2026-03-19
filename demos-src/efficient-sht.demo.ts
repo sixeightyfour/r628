@@ -1,5 +1,5 @@
 import { createLookupOptimizedSHTGenerator } from "../src/lookup-optimized-spatial-hash-table";
-import { sub2 } from "../src/math/vector";
+import { sub2 } from "../src/math/vector.generated";
 import { rand, range } from "../src/range";
 import { Circle, Rect } from "../src/spatial-hash-table";
 

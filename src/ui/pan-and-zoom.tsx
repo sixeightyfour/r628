@@ -1,12 +1,12 @@
 import React, { ReactNode, useEffect, useRef, useState } from "react";
 import { lerp, rescale } from "../interpolation";
-import { Mat3x2 } from "../math/vector";
+import { Mat3x2 } from "../math/vector.generated";
 import { Rect } from "../spatial-hash-table";
 
 export function panAndZoomMatrix(
   rect: Rect,
   containerWidth: number,
-  containerHeight: number
+  containerHeight: number,
 ): Mat3x2 {
   const scaleX = (1 / (rect.b[0] - rect.a[0])) * containerWidth;
   const scaleY = (1 / (rect.b[1] - rect.a[1])) * containerHeight;
@@ -20,7 +20,7 @@ export function panAndZoomMatrix(
 export function panAndZoomCanvas2d(
   canvas: HTMLCanvasElement,
   ctx: CanvasRenderingContext2D,
-  rect: Rect
+  rect: Rect,
 ) {
   ctx.transform(...panAndZoomMatrix(rect, canvas.width, canvas.height));
 }
@@ -75,12 +75,12 @@ export function PanAndZoom(props: {
           const targetOriginX = lerp(
             normalizedMousePos.current.x,
             c.a[0],
-            c.b[0]
+            c.b[0],
           );
           const targetOriginY = lerp(
             normalizedMousePos.current.y,
             c.a[1],
-            c.b[1]
+            c.b[1],
           );
           const scrollAmount = (scrollVel.current * deltaTime) / 1000;
           return {

@@ -87,7 +87,7 @@ export async function setupGraphRenderer(device: GPUDevice) {
     device,
     navigator.gpu.getPreferredCanvasFormat(),
     {
-      multisample: aaMode ? { count: 4 } : undefined,
+      multisample: aaMode === "msaa" ? { count: 4 } : undefined,
     },
   );
 
@@ -102,7 +102,7 @@ export async function setupGraphRenderer(device: GPUDevice) {
     device,
     navigator.gpu.getPreferredCanvasFormat(),
     {
-      multisample: aaMode ? { count: 4 } : undefined,
+      multisample: aaMode === "msaa" ? { count: 4 } : undefined,
     },
   );
 

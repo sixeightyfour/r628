@@ -1,10 +1,10 @@
-import { Mat4 } from "../math/vector";
+import { Mat4 } from "../math/vector.generated";
 
 export function perspectiveWebgpu(
   fieldOfViewInRadians: number,
   aspectRatio: number,
   near: number,
-  far: number
+  far: number,
 ): Mat4 {
   const f = 1.0 / Math.tan(fieldOfViewInRadians / 2);
   const rangeInv = 1 / (near - far);

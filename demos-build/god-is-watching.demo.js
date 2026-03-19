@@ -5,8 +5,8 @@
   var __getOwnPropNames = Object.getOwnPropertyNames;
   var __getProtoOf = Object.getPrototypeOf;
   var __hasOwnProp = Object.prototype.hasOwnProperty;
-  var __commonJS = (cb2, mod) => function __require() {
-    return mod || (0, cb2[__getOwnPropNames(cb2)[0]])((mod = { exports: {} }).exports, mod), mod.exports;
+  var __commonJS = (cb, mod) => function __require() {
+    return mod || (0, cb[__getOwnPropNames(cb)[0]])((mod = { exports: {} }).exports, mod), mod.exports;
   };
   var __copyProps = (to, from, except, desc) => {
     if (from && typeof from === "object" || typeof from === "function") {
@@ -17591,8 +17591,8 @@
             return state.loading |= Errored;
           }), setInitialProperties(key, "link", preloadProps), markNodeAsHoistable(key), ownerDocument.head.appendChild(key));
         }
-        function getScriptKey(src2) {
-          return '[src="' + escapeSelectorAttributeValueInsideDoubleQuotes(src2) + '"]';
+        function getScriptKey(src) {
+          return '[src="' + escapeSelectorAttributeValueInsideDoubleQuotes(src) + '"]';
         }
         function getScriptSelectorFromKey(key) {
           return "script[async]" + key;
@@ -21126,14 +21126,14 @@
               }
             }
           },
-          X: function(src2, options) {
-            previousDispatcher.X(src2, options);
+          X: function(src, options) {
+            previousDispatcher.X(src, options);
             var ownerDocument = globalDocument;
-            if (ownerDocument && src2) {
-              var scripts = getResourcesFromRoot(ownerDocument).hoistableScripts, key = getScriptKey(src2), resource = scripts.get(key);
+            if (ownerDocument && src) {
+              var scripts = getResourcesFromRoot(ownerDocument).hoistableScripts, key = getScriptKey(src), resource = scripts.get(key);
               resource || (resource = ownerDocument.querySelector(
                 getScriptSelectorFromKey(key)
-              ), resource || (src2 = assign({ src: src2, async: true }, options), (options = preloadPropsMap.get(key)) && adoptPreloadPropsForScript(src2, options), resource = ownerDocument.createElement("script"), markNodeAsHoistable(resource), setInitialProperties(resource, "link", src2), ownerDocument.head.appendChild(resource)), resource = {
+              ), resource || (src = assign({ src, async: true }, options), (options = preloadPropsMap.get(key)) && adoptPreloadPropsForScript(src, options), resource = ownerDocument.createElement("script"), markNodeAsHoistable(resource), setInitialProperties(resource, "link", src), ownerDocument.head.appendChild(resource)), resource = {
                 type: "script",
                 instance: resource,
                 count: 1,
@@ -21190,14 +21190,14 @@
               }
             }
           },
-          M: function(src2, options) {
-            previousDispatcher.M(src2, options);
+          M: function(src, options) {
+            previousDispatcher.M(src, options);
             var ownerDocument = globalDocument;
-            if (ownerDocument && src2) {
-              var scripts = getResourcesFromRoot(ownerDocument).hoistableScripts, key = getScriptKey(src2), resource = scripts.get(key);
+            if (ownerDocument && src) {
+              var scripts = getResourcesFromRoot(ownerDocument).hoistableScripts, key = getScriptKey(src), resource = scripts.get(key);
               resource || (resource = ownerDocument.querySelector(
                 getScriptSelectorFromKey(key)
-              ), resource || (src2 = assign({ src: src2, async: true, type: "module" }, options), (options = preloadPropsMap.get(key)) && adoptPreloadPropsForScript(src2, options), resource = ownerDocument.createElement("script"), markNodeAsHoistable(resource), setInitialProperties(resource, "link", src2), ownerDocument.head.appendChild(resource)), resource = {
+              ), resource || (src = assign({ src, async: true, type: "module" }, options), (options = preloadPropsMap.get(key)) && adoptPreloadPropsForScript(src, options), resource = ownerDocument.createElement("script"), markNodeAsHoistable(resource), setInitialProperties(resource, "link", src), ownerDocument.head.appendChild(resource)), resource = {
                 type: "script",
                 instance: resource,
                 count: 1,
@@ -21457,7 +21457,7 @@
     }
     return arr;
   }
-  function smartRangeMap(n, cb2) {
+  function smartRangeMap(n, cb) {
     const a = range(n);
     const res1 = a.map((i, index, arr) => {
       return {
@@ -21489,7 +21489,7 @@
         start: () => i === 0
       };
     });
-    const res = res1.map(cb2);
+    const res = res1.map(cb);
     return res;
   }
   function smartRange(n) {
@@ -21503,7 +21503,7 @@
     return random() * (hi - lo) + lo;
   }
 
-  // src/math/vector.ts
+  // src/math/vector.generated.ts
   function add2(a, b) {
     return [a[0] + b[0], a[1] + b[1]];
   }
@@ -21536,16 +21536,6 @@
   function bifurcate(arr, fn) {
     const bools = arr.map(fn);
     return [arr.filter((e, i) => bools[i]), arr.filter((e, i) => !bools[i])];
-  }
-  function groupBy(arr, getGroup) {
-    const groups = /* @__PURE__ */ new Map();
-    for (const entry of arr) {
-      const groupName = getGroup(entry);
-      let group = groups.get(groupName) ?? [];
-      group.push(entry);
-      groups.set(groupName, group);
-    }
-    return groups;
   }
 
   // src/interpolation.ts
@@ -21664,43 +21654,19 @@
   }
 
   // src/threadpool.ts
-  function getPerformanceStatistics(records) {
-    return Object.fromEntries(
-      Array.from(groupBy(records, (g) => g.name).entries()).map(([name, v]) => {
-        const totalRuntime = v.reduce((prev, curr) => prev + curr.runtime, 0) / v.length;
-        const invocationCount = v.length;
-        return [
-          name,
-          {
-            totalRuntime,
-            invocationCount,
-            averageRuntime: totalRuntime / invocationCount,
-            worstCaseRuntime: v.reduce(
-              (prev, curr) => Math.max(prev, curr.runtime),
-              0
-            ),
-            bestCaseRuntime: v.reduce(
-              (prev, curr) => Math.min(prev, curr.runtime),
-              0
-            )
-          }
-        ];
-      })
-    );
-  }
   function wrapWithPromise(t) {
     if (t instanceof Promise) {
       return t;
     }
     return Promise.resolve(t);
   }
-  function createRoundRobinThreadpool(src2, workerCount2, serialization2, t) {
-    const count = workerCount2 ?? navigator.hardwareConcurrency;
+  function createRoundRobinThreadpool(src, workerCount, serialization, t) {
+    const count = workerCount ?? navigator.hardwareConcurrency;
     const performanceRecords = [];
     const workers = [];
     let nextWorker = 0;
     for (let i = 0; i < count; i++) {
-      workers.push(new Worker(src2));
+      workers.push(new Worker(src));
     }
     function getNextWorker() {
       const workerChoice = nextWorker;
@@ -21710,7 +21676,7 @@
     let id2 = 0;
     function sendMessageToWorkerWithResponse(prop, args, workerIndex) {
       const worker = workers[workerIndex];
-      const serializationInfo = serialization2?.[prop];
+      const serializationInfo = serialization?.[prop];
       const startTime = performance.now();
       const shouldRunInMain = serializationInfo?.runMode?.(args) ?? "worker";
       if (shouldRunInMain === "main") {
@@ -21738,18 +21704,18 @@
         const onResponse = async (e) => {
           if (e.data.id !== myid) return;
           worker.removeEventListener("message", onResponse);
-          const parseRetVal = serialization2?.[prop]?.parseRetVal ?? ((x) => x);
+          const parseRetVal = serialization?.[prop]?.parseRetVal ?? ((x) => x);
           resolve(await parseRetVal(e.data.returnValue));
         };
         worker.addEventListener("message", onResponse);
-        const serializeArgs = serialization2?.[prop]?.serializeArgs ?? ((x) => x);
+        const serializeArgs = serialization?.[prop]?.serializeArgs ?? ((x) => x);
         worker.postMessage(
           {
             type: prop,
             args: await serializeArgs(args),
             id: myid
           },
-          serialization2?.[prop]?.transferArgs?.(args) ?? []
+          serialization?.[prop]?.transferArgs?.(args) ?? []
         );
       });
       performanceRecords.push(
@@ -21798,24 +21764,24 @@
       })
     };
   }
-  function createRoundRobinThread(t, serialization2) {
+  function createRoundRobinThread(t, serialization) {
     self.addEventListener("message", async (e) => {
-      const parseArgs = serialization2?.[e.data.type]?.parseArgs ?? id;
+      const parseArgs = serialization?.[e.data.type]?.parseArgs ?? id;
       const args = await parseArgs(e.data.args);
       const resp = await t[e.data.type](...args);
-      const serializeReturnValue = serialization2?.[e.data.type]?.serializeRetVal ?? id;
+      const serializeReturnValue = serialization?.[e.data.type]?.serializeRetVal ?? id;
       postMessage(
         {
           returnValue: await serializeReturnValue(resp),
           id: e.data.id
         },
         // @ts-expect-error
-        serialization2?.[e.data.type]?.transferRetVal?.(resp) ?? []
+        serialization?.[e.data.type]?.transferRetVal?.(resp) ?? []
       );
     });
   }
   function createCombinedRoundRobinThreadpool(getInterface, src, workerCount, serialization) {
-    if (eval("self.WorkerGlobalScope")) {
+    if (self.WorkerGlobalScope) {
       createRoundRobinThread(getInterface(false), serialization);
       return;
     } else {
@@ -21828,7 +21794,7 @@
     }
   }
   async function inMainThread(cb) {
-    if (eval("self.WorkerGlobalScope")) {
+    if (self.WorkerGlobalScope) {
       return;
     }
     return await cb();

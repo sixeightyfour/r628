@@ -9,7 +9,7 @@ import {
   scale2,
   sub2,
   Vec2,
-} from "../src/math/vector";
+} from "../src/math/vector.generated";
 import { range, smartRange } from "../src/range";
 
 type Particle = {
@@ -102,7 +102,7 @@ const LATTICE_Y = 20;
 
 const particles: Particle[] = cartesianProduct(
   smartRange(LATTICE_X),
-  smartRange(LATTICE_Y)
+  smartRange(LATTICE_Y),
 ).map(([a, b]) => {
   const pos: Vec2 = [
     a.remap(100, 100 + LATTICE_DIST * LATTICE_X) +

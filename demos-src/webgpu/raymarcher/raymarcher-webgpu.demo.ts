@@ -6,7 +6,7 @@ import {
   scale3,
   Vec3,
   xyz,
-} from "../../../src/math/vector";
+} from "../../../src/math/vector.generated";
 import ComputeWGSLJson from "compute.wgsl";
 import ComputeShader from "./compute.wgsl?raw";
 import { inverse, Matrix } from "ml-matrix";
@@ -47,7 +47,7 @@ console.log(BlitWGSLJson);
   const device = await adapter.requestDevice();
   device.pushErrorScope("internal");
   device.addEventListener("uncapturederror", (event) =>
-    console.error(event.error)
+    console.error(event.error),
   );
   if (!device) {
     fail("No GPU device!");
@@ -82,7 +82,7 @@ fn sdf(
   // return -pos.y + 1.0;
 }
 
-  `
+  `,
     ),
   });
 
@@ -217,7 +217,7 @@ fn sdf(
         keysDown.has("w") ? 1 : keysDown.has("s") ? -1 : 0,
         0,
       ],
-      inv4(rotationMatrix)
+      inv4(rotationMatrix),
     );
 
     viewerVel = add3(viewerVel, xyz(accel));
@@ -246,7 +246,7 @@ fn sdf(
         brightnessFactor: frameIndex % 70 === 1 || true ? 1 : 0,
         shouldReset,
         aspect: height / width,
-      }
+      },
     );
 
     lastTransform = currTransform;

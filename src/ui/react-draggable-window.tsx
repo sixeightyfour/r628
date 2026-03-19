@@ -15,7 +15,7 @@ import {
   remap2,
   sub2,
   Vec2,
-} from "../math/vector";
+} from "../math/vector.generated";
 import { useLatest } from "./use-latest";
 import { Rect } from "../spatial-hash-table";
 import { lerp, rescale } from "../interpolation";
@@ -27,7 +27,7 @@ const DraggableWindowContext = createContext<{
 }>(undefined);
 
 export function useParentDims(
-  getParent: (elem: HTMLElement) => HTMLElement | undefined
+  getParent: (elem: HTMLElement) => HTMLElement | undefined,
 ) {
   const [parentDims, setParentDims] = useState([1, 1] as Vec2);
 
@@ -75,14 +75,14 @@ export function DraggableWindow(props: {
     props.transform.a[0],
     props.transform.b[0],
     0,
-    100
+    100,
   );
   const transformedY = rescale(
     props.pos[1],
     props.transform.a[1],
     props.transform.b[1],
     0,
-    100
+    100,
   );
 
   const [elemRef, parentDims] = useParentDims((e) => e.parentElement);
@@ -94,7 +94,7 @@ export function DraggableWindow(props: {
         setPos: props.setPos,
         currentScaleFactors: div2(
           sub2(props.transform.b, props.transform.a),
-          parentDims
+          parentDims,
           // [100, 100]
         ),
       }}
@@ -122,7 +122,7 @@ export function LineSeg(props: { transform: Rect; endpoints: Rect }) {
     props.transform.a,
     props.transform.b,
     [0, 0],
-    parentDims
+    parentDims,
   );
 
   const remappedEndpointB = remap2(
@@ -130,7 +130,7 @@ export function LineSeg(props: { transform: Rect; endpoints: Rect }) {
     props.transform.a,
     props.transform.b,
     [0, 0],
-    parentDims
+    parentDims,
   );
 
   const [dist, dir] = cart2Polar(sub2(remappedEndpointB, remappedEndpointA));
@@ -154,7 +154,7 @@ export function LineSeg(props: { transform: Rect; endpoints: Rect }) {
 
 export function Dragger(props: { children: React.ReactNode }) {
   const { pos, setPos, currentScaleFactors } = useContext(
-    DraggableWindowContext
+    DraggableWindowContext,
   )!;
   const elemRef = useRef<HTMLDivElement | null>(null);
 
@@ -170,7 +170,7 @@ export function Dragger(props: { children: React.ReactNode }) {
     const mousemove = (evt: MouseEvent) => {
       tempPosRef.current = add2(
         tempPosRef.current,
-        mul2([evt.movementX, evt.movementY], currentScaleFactors)
+        mul2([evt.movementX, evt.movementY], currentScaleFactors),
       );
 
       setPos(tempPosRef.current);

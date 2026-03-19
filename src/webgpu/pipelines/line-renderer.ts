@@ -1,4 +1,4 @@
-import { Mat4, scale4, Vec3, Vec4 } from "../../math/vector";
+import { Mat4, scale4, Vec3, Vec4 } from "../../math/vector.generated";
 import { range, rangeFrom } from "../../range";
 import {
   OutputFormat,

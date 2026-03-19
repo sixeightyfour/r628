@@ -1,5 +1,5 @@
 import { rescaleClamped } from "./interpolation";
-import { Vec2 } from "./math/vector";
+import { Vec2 } from "./math/vector.generated";
 import { Rect } from "./spatial-hash-table";
 
 export type LookupOptimizedSpatialHashTable<T> = {
@@ -31,8 +31,8 @@ export function createLookupOptimizedSHTGenerator<T>(params: {
         htBounds.a[0],
         htBounds.b[0],
         0,
-        resolution[0] - 1
-      )
+        resolution[0] - 1,
+      ),
     );
     const bucketXEnd = Math.ceil(
       rescaleClamped(
@@ -40,8 +40,8 @@ export function createLookupOptimizedSHTGenerator<T>(params: {
         htBounds.a[0],
         htBounds.b[0],
         0,
-        resolution[0]
-      )
+        resolution[0],
+      ),
     );
     const bucketYStart = Math.floor(
       rescaleClamped(
@@ -49,8 +49,8 @@ export function createLookupOptimizedSHTGenerator<T>(params: {
         htBounds.a[1],
         htBounds.b[1],
         0,
-        resolution[1] - 1
-      )
+        resolution[1] - 1,
+      ),
     );
     const bucketYEnd = Math.ceil(
       rescaleClamped(
@@ -58,8 +58,8 @@ export function createLookupOptimizedSHTGenerator<T>(params: {
         htBounds.a[1],
         htBounds.b[1],
         0,
-        resolution[1]
-      )
+        resolution[1],
+      ),
     );
 
     const indexes: number[] = [];

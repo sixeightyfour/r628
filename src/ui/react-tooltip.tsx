@@ -1,5 +1,5 @@
 import { createContext, useContext, useEffect, useRef, useState } from "react";
-import { Vec2 } from "../math/vector";
+import { Vec2 } from "../math/vector.generated";
 import React from "react";
 
 const Tooltips = createContext<TooltipContext>({

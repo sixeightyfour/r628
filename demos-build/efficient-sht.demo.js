@@ -118,7 +118,7 @@
     };
   }
 
-  // src/math/vector.ts
+  // src/math/vector.generated.ts
   function sub2(a, b) {
     return [a[0] - b[0], a[1] - b[1]];
   }

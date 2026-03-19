@@ -15,7 +15,7 @@ import {
   Vec2,
   Vec3,
   Vec4,
-} from "../math/vector";
+} from "../math/vector.generated";
 import {
   TEXTURE_DIMENSIONALITIES,
   TEXTURE_FORMAT_TO_WGSL_TYPE_LUT,
@@ -136,7 +136,7 @@ export function createSimpleFilterPipeline<
     source: string;
     globals?: string;
     uniforms?: Uniforms;
-  }
+  },
 ) {
   let fragmentBody = "";
 
@@ -208,7 +208,7 @@ var tex_${name}: ${value.dimensionality ?? "texture_2d"}<${value.type ?? "f32"}>
 struct Params {\n`;
 
     for (const [uniformName, uniformType] of Object.entries(
-      spec.uniforms ?? {}
+      spec.uniforms ?? {},
     )) {
       globals += `  ${uniformName}: ${uniformType},\n`;
     }
@@ -279,7 +279,7 @@ struct Params {\n`;
         setBuffer(
           values: WGSLStructValues<
             GenerateWGSLStructFromCompactRepr<"Params", Uniforms>
-          >
+          >,
         ) {
           const buf = new ArrayBuffer(uniformLayouts.size);
           uniformGenerator(new DataView(buf), values);
@@ -354,7 +354,7 @@ struct Params {\n`;
                 [K in keyof Outputs]:
                   | GPUTextureView
                   | GPURenderPassColorAttachment;
-              }
+              },
             ) => {
               const pass = encoder.beginRenderPass({
                 colorAttachments: outputsEntries.map(([name, value]) =>
@@ -365,7 +365,7 @@ struct Params {\n`;
                         loadOp: "clear",
                         storeOp: "store",
                       }
-                    : outputs[name]
+                    : outputs[name],
                 ),
               });
 
@@ -385,7 +385,7 @@ struct Params {\n`;
             setUniforms(
               values: WGSLStructValues<
                 GenerateWGSLStructFromCompactRepr<"Params", Uniforms>
-              >
+              >,
             ) {
               const buf = new ArrayBuffer(uniformLayouts.size);
               uniformGenerator(new DataView(buf), values);
@@ -397,7 +397,7 @@ struct Params {\n`;
         withUniforms: (
           uniforms: keyof Uniforms extends never
             ? undefined
-            : { bindGroup: GPUBindGroup }
+            : { bindGroup: GPUBindGroup },
         ) => {
           function record(bundleEncoder: GPURenderBundleEncoder) {
             bundleEncoder.setPipeline(pipeline);
@@ -409,7 +409,7 @@ struct Params {\n`;
             if (uniforms)
               bundleEncoder.setBindGroup(
                 uniformBindGroupIndex,
-                uniforms.bindGroup
+                uniforms.bindGroup,
               );
 
             bundleEncoder.draw(6);
@@ -430,7 +430,7 @@ struct Params {\n`;
                 [K in keyof Outputs]:
                   | GPUTextureView
                   | GPURenderPassColorAttachment;
-              }
+              },
             ) => {
               const pass = encoder.beginRenderPass({
                 colorAttachments: outputsEntries.map(([name, value]) =>
@@ -441,7 +441,7 @@ struct Params {\n`;
                         loadOp: "clear",
                         storeOp: "store",
                       }
-                    : outputs[name]
+                    : outputs[name],
                 ),
               });
 

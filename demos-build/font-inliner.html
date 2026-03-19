@@ -4,6 +4,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /> 
   </head>
   <body>
+    <script>
+      if (window.location.hostname === "r628.localhost") {
+        const socket = new WebSocket("ws://r628.localhost:5501/changes");
+        socket.addEventListener("message", () => {
+          window.location.reload();
+        });
+      }
+    </script>
     <script src="font-inliner.demo.js"></script>
   </body>
 </html>

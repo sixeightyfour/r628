@@ -29,7 +29,7 @@ import {
   WGSLStructSpec,
   WGSLStructValues,
 } from "./wgsl-struct-layout-generator";
-import { Vec2, Vec3 } from "../math/vector";
+import { Vec2, Vec3 } from "../math/vector.generated";
 import { arrayToObjEntries, arrayToObjValues } from "../object-utils";
 
 type WrappedBindGroupTexture<

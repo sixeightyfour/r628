@@ -1,4 +1,12 @@
-import { Mat2, Mat3, Mat4, Vec1, Vec2, Vec3, Vec4 } from "../math/vector";
+import {
+  Mat2,
+  Mat3,
+  Mat4,
+  Vec1,
+  Vec2,
+  Vec3,
+  Vec4,
+} from "../math/vector.generated";
 import { BufferWithLayout, GL } from "./buffer";
 
 export type Drawable = {
@@ -46,13 +54,13 @@ export function applyUniform(
   gl: GL,
   prog: WebGLProgram,
   name: string,
-  spec: UniformSpec
+  spec: UniformSpec,
 ) {
   const [t, d] = spec;
   const l = gl.getUniformLocation(prog, name);
   if (l === null) {
     throw new Error(
-      `Uniform '${name}' does not exist, or some other error occurred (program didn't compile).`
+      `Uniform '${name}' does not exist, or some other error occurred (program didn't compile).`,
     );
   }
 
@@ -136,7 +144,7 @@ export function createScene(sceneSpec: SceneSpec): Scene {
           applyUniforms(
             gl,
             spec.program,
-            combineUniforms(sceneUniforms, objectUniforms)
+            combineUniforms(sceneUniforms, objectUniforms),
           );
           gl.drawArrays(gl.TRIANGLES, 0, spec.buffer.vertexCount);
         },

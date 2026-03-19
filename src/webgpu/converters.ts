@@ -11,7 +11,7 @@ import {
   Vec2,
   Vec3,
   Vec4,
-} from "../math/vector";
+} from "../math/vector.generated";
 import { KvSwap } from "../typelevel";
 
 export type TextureFormat = keyof typeof TEXTURE_FORMAT_TO_WGSL_TYPE_LUT;

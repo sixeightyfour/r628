@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useRef, useState } from "react";
 import { createContext } from "react";
-import { Vec2 } from "../math/vector";
+import { Vec2 } from "../math/vector.generated";
 
 export type DragAndDrop<T> = ReturnType<typeof createDragContext<T>>;
 

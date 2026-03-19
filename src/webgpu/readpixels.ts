@@ -1,5 +1,5 @@
 import { roundUp } from "../math/round";
-import { sub3, Vec3 } from "../math/vector";
+import { sub3, Vec3 } from "../math/vector.generated";
 import { range } from "../range";
 import {
   getCopyFootprintPerTexel,

@@ -1,5 +1,5 @@
 import { Rect } from "../spatial-hash-table";
-import { add2, mix2, pointTo, Vec2 } from "./vector";
+import { add2, mix2, pointTo, Vec2 } from "./vector.generated";
 
 type Circle = {
   center: Vec2;
@@ -61,7 +61,7 @@ export function lineIntersectLine(a: LineSegment, b: LineSegment) {
 
 export function lineSegmentIntersectLineSegment(
   a: LineSegment,
-  b: LineSegment
+  b: LineSegment,
 ) {
   const t2 = lineIntersectLine(a, b);
   const t1 = lineIntersectLine(b, a);
@@ -78,32 +78,32 @@ export function lineIntersectRect(l: LineSegment, rect: Rect) {
       a: rect.a,
       b: [rect.b[0], rect.a[1]],
     },
-    l
+    l,
   );
   const bottomIntersect = lineSegmentIntersectLineSegment(
     {
       a: [rect.a[0], rect.b[1]],
       b: rect.b,
     },
-    l
+    l,
   );
   const leftIntersect = lineSegmentIntersectLineSegment(
     {
       a: rect.a,
       b: [rect.a[0], rect.b[1]],
     },
-    l
+    l,
   );
   const rightIntersect = lineSegmentIntersectLineSegment(
     {
       a: [rect.b[0], rect.a[1]],
       b: rect.b,
     },
-    l
+    l,
   );
 
   return [topIntersect, bottomIntersect, leftIntersect, rightIntersect].filter(
-    (i) => i && i >= 0 && i <= 1
+    (i) => i && i >= 0 && i <= 1,
   );
 }
 
@@ -117,18 +117,18 @@ export function rayIntersectLine(ray: Ray, b: LineSegment) {
       a: ray.center,
       b: add2(ray.center, [Math.cos(ray.dir), Math.sin(ray.dir)]),
     },
-    b
+    b,
   );
 }
 
 export function getSmallestAngleDifference(
   a: number,
-  b: number
+  b: number,
 ): [number, number] {
   const minDiff = Math.min(
     Math.abs(a - b),
     Math.abs(a - b + Math.PI * 2),
-    Math.abs(a - b - Math.PI * 2)
+    Math.abs(a - b - Math.PI * 2),
   );
 
   const lowest = Math.min(a, b);
@@ -139,11 +139,11 @@ export function getSmallestAngleDifference(
 export function getEqualAngularDivisionsOfLineSegment(
   center: Vec2,
   b: LineSegment,
-  interval: number
+  interval: number,
 ): number[] {
   const [angle1, angle2] = getSmallestAngleDifference(
     pointTo(center, b.a),
-    pointTo(center, b.b)
+    pointTo(center, b.b),
   );
 
   const truncatedAngle1 = Math.ceil(angle1 / interval) * interval;
@@ -157,8 +157,8 @@ export function getEqualAngularDivisionsOfLineSegment(
           center,
           dir: i,
         },
-        b
-      )
+        b,
+      ),
     );
   }
 
@@ -187,7 +187,7 @@ export function rangeIntersects(
   a1: number,
   a2: number,
   b1: number,
-  b2: number
+  b2: number,
 ) {
   return !(a1 > b2 || b1 > a2);
 }

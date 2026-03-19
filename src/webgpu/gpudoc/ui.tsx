@@ -16,7 +16,14 @@ import {
 } from "../converters";
 import { Buffers, Textures } from "./gpudoc";
 import GPUDocCss from "./gpudoc.css?raw";
-import { add3, rescale2, sub2, Vec2, Vec3, Vec4 } from "../../math/vector";
+import {
+  add3,
+  rescale2,
+  sub2,
+  Vec2,
+  Vec3,
+  Vec4,
+} from "../../math/vector.generated";
 import { v4 } from "uuid";
 import { PanAndZoom, TransformHTML } from "../../ui/pan-and-zoom";
 import { Rect } from "../../spatial-hash-table";
@@ -84,7 +91,7 @@ export function gpuDebugWindow(params: {
       device={params.device}
       textures={params.textures}
       buffers={params.buffers}
-    ></GpudocDebugWindow>
+    ></GpudocDebugWindow>,
   );
 
   return d;
@@ -97,7 +104,7 @@ function GpudocDebugWindow(props: {
 }) {
   const displayer = useMemo(
     () => textureDisplayer(props.device),
-    [props.device]
+    [props.device],
   );
 
   const [tabs, setTabs] = useState<GPUDocTab[]>([
@@ -133,7 +140,7 @@ function GpudocDebugWindow(props: {
             tab={currentTab}
             setTab={(newtab) =>
               setTabs((oldtabs) =>
-                oldtabs.map((t, i) => (i === currentTabIndex ? newtab(t) : t))
+                oldtabs.map((t, i) => (i === currentTabIndex ? newtab(t) : t)),
               )
             }
           ></GpudocTab>
@@ -186,7 +193,7 @@ function GpudocTab(props: {
                   setValue={(v) =>
                     props.setTab(
                       (oldtab: GPUDocTab & { type: "inspect-texture" }) =>
-                        xray(oldtab).dark.$i(i).$(v).$v
+                        xray(oldtab).dark.$i(i).$(v).$v,
                     )
                   }
                   jumpstartDragFromZero={0.01}
@@ -201,7 +208,7 @@ function GpudocTab(props: {
                   setValue={(v) =>
                     props.setTab(
                       (oldtab: GPUDocTab & { type: "inspect-texture" }) =>
-                        xray(oldtab).light.$i(i).$(v).$v
+                        xray(oldtab).light.$i(i).$(v).$v,
                     )
                   }
                   jumpstartDragFromZero={0.01}
@@ -230,7 +237,7 @@ function GpudocTab(props: {
                   (oldtab) =>
                     xray(oldtab as GPUDocTab & { type: "inspect-texture" })
                       .texelInspectorWindows.$i(i)
-                      .$(w).$v
+                      .$(w).$v,
                 )
               }
             ></TexelInspectorWindow>
@@ -273,14 +280,14 @@ function TexelInspectorWindow(props: {
     tab.coords.a[0],
     tab.coords.b[0],
     0,
-    100
+    100,
   );
   const texelMarkerY = rescale(
     roundedSamplePos[1],
     tab.coords.a[1],
     tab.coords.b[1],
     0,
-    100
+    100,
   );
 
   const area = sub2(tab.coords.b, tab.coords.a);
@@ -301,7 +308,7 @@ function TexelInspectorWindow(props: {
         roundedSamplePos[0] + 1 / tab.tex.width,
         roundedSamplePos[1] + 1 / tab.tex.height,
       ],
-    })
+    }),
   );
 
   const [pixel, setPixel] = useState<Vec4>([0, 0, 0, 0]);
@@ -504,7 +511,7 @@ function TextureCanvas(props: {
         tex: ctx.getCurrentTexture().createView(),
         format: canvasFormat as TextureFormat,
       },
-      encoder
+      encoder,
     );
 
     device.queue.submit([encoder.finish()]);

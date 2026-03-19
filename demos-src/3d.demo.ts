@@ -1,4 +1,4 @@
-import { mulMat4 } from "../src/math/vector";
+import { mulMat4 } from "../src/math/vector.generated";
 import { createBufferWithLayout } from "../src/webgl/buffer";
 import {
   ortho,
@@ -67,7 +67,7 @@ uniform vec4 color;
 void main() {
   col = color;
 }
-`
+`,
 ).data;
 
 if (!prog) {
@@ -111,7 +111,7 @@ const obj = scene.addObject3D({
   buffer: createBufferWithLayout(
     gl,
     { in_pos: { type: gl.FLOAT, size: 3 } },
-    mesh
+    mesh,
   ),
   program: prog,
   uniforms: {
@@ -127,7 +127,7 @@ function loop(t: number) {
       "mat4",
       mulMat4(
         translate([0, window.scrollY / window.outerHeight - 2.5, 0]),
-        perspective(1, ASPECT, 0.1, 100)
+        perspective(1, ASPECT, 0.1, 100),
       ),
     ],
   });
@@ -141,8 +141,8 @@ function loop(t: number) {
           rotate([0.5, 1, 0], Math.PI / 4),
           mulMat4(
             rotate([0, 0, 1], (i * t + 5) / 100000),
-            scale([scaleFactor, scaleFactor, scaleFactor])
-          )
+            scale([scaleFactor, scaleFactor, scaleFactor]),
+          ),
         ),
       ],
       color: ["vec4", [i / 200, 0, 0, 1]],

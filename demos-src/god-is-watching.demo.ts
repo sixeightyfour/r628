@@ -5,7 +5,14 @@ import {
   smartRange,
   rand,
 } from "../src/range";
-import { add2, length2, scale2, sub2, Vec2, w } from "../src/math/vector";
+import {
+  add2,
+  length2,
+  scale2,
+  sub2,
+  Vec2,
+  w,
+} from "../src/math/vector.generated";
 import { bifurcate } from "../src/array-utils";
 import { makeQuadtree } from "../src/quadtree";
 import { clamp, lerp, unlerp } from "../src/interpolation";
@@ -55,12 +62,12 @@ function physicsIter(points: Points, edges: Edges, push: (pt: Point) => Vec2) {
     if (!e.points[0].fixed)
       e.points[0].pos = add2(
         e.points[0].pos,
-        scale2(force, e.points[0].resistance)
+        scale2(force, e.points[0].resistance),
       );
     if (!e.points[1].fixed)
       e.points[1].pos = sub2(
         e.points[1].pos,
-        scale2(force, e.points[1].resistance)
+        scale2(force, e.points[1].resistance),
       );
   }
 }
@@ -69,11 +76,11 @@ function splitLongEdges(
   points: Points,
   edges: Edges,
   threshold: number,
-  maxPoints: number
+  maxPoints: number,
 ): Edges {
   const [edgesToSplit, edgesToKeep] = bifurcate(
     edges,
-    (e) => length2(sub2(e.points[0].pos, e.points[1].pos)) > threshold
+    (e) => length2(sub2(e.points[0].pos, e.points[1].pos)) > threshold,
   );
 
   const newEdges = edgesToKeep;
@@ -115,7 +122,7 @@ async function drawEdges(
   edges: Edges,
   ctx: CanvasRenderingContext2D,
   width: number,
-  height: number
+  height: number,
 ) {
   let i = 0;
 
@@ -150,7 +157,7 @@ const forceEmitters: SpatialHashTable<ForceEmitter> = spatialHashTable(
   (f) => ({
     a: [f.pos[0] - f.radMax, f.pos[1] - f.radMax],
     b: [f.pos[0] + f.radMax, f.pos[1] + f.radMax],
-  })
+  }),
 );
 
 function runIters(n: number) {
@@ -163,19 +170,19 @@ function runIters(n: number) {
         const distFromCenter = length2(offsetFromCenter);
         const directionFromCenter = scale2(
           offsetFromCenter,
-          1 / distFromCenter
+          1 / distFromCenter,
         );
 
         const normedDist = unlerp(distFromCenter, f.radMin, f.radMax);
         const strength = lerp(
           clamp(normedDist, 0, 1) ** f.forceGamma,
           f.forceMax,
-          f.forceMin
+          f.forceMin,
         );
 
         const forceFromCenter = scale2(
           directionFromCenter,
-          Math.min(0.005, (1 / 1_000_000) * strength)
+          Math.min(0.005, (1 / 1_000_000) * strength),
         );
         force = add2(force, forceFromCenter);
       }
@@ -187,7 +194,7 @@ function runIters(n: number) {
 
 function randomlyPlaceForceEmitters(
   parameters: { pos: Vec2; size: number }[],
-  forceGamma: number
+  forceGamma: number,
 ) {
   for (const f of forceEmitters.all()) {
     f.forceMax = 0;
@@ -234,7 +241,7 @@ function addEyeball(
   edges: Edges,
   position: Vec2,
   irisRadius: number,
-  pupilRadius: number
+  pupilRadius: number,
 ) {
   // const COUNT = 250;
   // for (const i of smartRange(COUNT)) {
@@ -318,19 +325,19 @@ const threadpool = createCombinedRoundRobinThreadpool(
           const distFromCenter = length2(offsetFromCenter);
           const directionFromCenter = scale2(
             offsetFromCenter,
-            1 / distFromCenter
+            1 / distFromCenter,
           );
 
           const normedDist = unlerp(distFromCenter, f.radMin, f.radMax);
           const strength = lerp(
             clamp(normedDist, 0, 1) ** f.forceGamma,
             f.forceMax,
-            f.forceMin
+            f.forceMin,
           );
 
           const forceFromCenter = scale2(
             directionFromCenter,
-            Math.min(0.005, (1 / 1_000_000) * strength)
+            Math.min(0.005, (1 / 1_000_000) * strength),
           );
           force = add2(force, forceFromCenter);
         }
@@ -340,7 +347,7 @@ const threadpool = createCombinedRoundRobinThreadpool(
         points,
         edges,
         (0.5 * 1) / POINTS_PER_LINE,
-        2000000
+        2000000,
       );
     },
 
@@ -390,7 +397,7 @@ const threadpool = createCombinedRoundRobinThreadpool(
     bezierAdaptive,
   }),
   undefined,
-  20
+  20,
 );
 
 function createSvgPath(path: Vec2[], sigfigs: number) {
@@ -433,7 +440,7 @@ inMainThread(async () => {
     count: number,
     sizeMin: number,
     sizeMax: number,
-    forceGamma: number
+    forceGamma: number,
   ) {
     return () =>
       threadpool.broadcast.randomlyPlaceForceEmitters(
@@ -441,7 +448,7 @@ inMainThread(async () => {
           pos: [Math.random(), Math.random()],
           size: rand(sizeMin, sizeMax),
         })),
-        forceGamma
+        forceGamma,
       );
   }
 
@@ -454,7 +461,7 @@ inMainThread(async () => {
           let lineEdges: Edges = [];
           const y = iLine.remap(0, 1, true);
           await threadpool.send.createLine(y, POINTS_PER_LINE);
-        })
+        }),
       );
     },
     "Center Eyeball",
@@ -502,7 +509,7 @@ inMainThread(async () => {
 
   const graph = createGraphFromData<{ pos: Vec2 }, undefined>(
     [...new Set(edges.map((e) => e.points).flat())],
-    edges.map((e) => ({ endpoints: e.points, data: undefined }))
+    edges.map((e) => ({ endpoints: e.points, data: undefined })),
   );
 
   const components = getConnectedComponents(graph);
@@ -527,26 +534,26 @@ inMainThread(async () => {
 
       const sequence = getDepthFirstTraversalOrder(
         comp,
-        findEndpoint(comp)
+        findEndpoint(comp),
       ).map((p) => scale2(p.data.pos, canvas.width));
 
       const bezierifiedCurve = await threadpool.send.bezierAdaptive(
         sequence,
         1,
         0.5,
-        50
+        50,
       );
 
       path.setAttributeNS(
         null,
         "d",
-        quadraticCurveToPath(bezierifiedCurve, 5, [0, 0])
+        quadraticCurveToPath(bezierifiedCurve, 5, [0, 0]),
       );
       svg.appendChild(path);
       componentsLoaded++;
       console.log(componentsLoaded);
       // }
-    })
+    }),
   );
 
   const eyeballpoints: Points = [];
@@ -573,7 +580,7 @@ inMainThread(async () => {
 
   const eyeballgraph = createGraphFromData<{ pos: Vec2 }, undefined>(
     [...new Set(eyeballedges.map((e) => e.points).flat())],
-    eyeballedges.map((e) => ({ endpoints: e.points, data: undefined }))
+    eyeballedges.map((e) => ({ endpoints: e.points, data: undefined })),
   );
 
   for (const comp of getConnectedComponents(eyeballgraph)) {
@@ -582,7 +589,7 @@ inMainThread(async () => {
     path.setAttributeNS(null, "stroke", "black");
 
     const sequence = getDepthFirstTraversalOrder(comp, findEndpoint(comp)).map(
-      (p) => scale2(p.data.pos, canvas.width)
+      (p) => scale2(p.data.pos, canvas.width),
     );
 
     path.setAttributeNS(null, "d", createSvgPath(sequence, 3));
@@ -597,7 +604,7 @@ inMainThread(async () => {
 ` + svg.outerHTML,
     ]),
 
-    "ISEEYOU.svg"
+    "ISEEYOU.svg",
   );
 
   document.body.appendChild(svg);

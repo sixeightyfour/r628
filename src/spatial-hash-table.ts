@@ -1,5 +1,5 @@
 import { rescale, rescaleClamped } from "./interpolation";
-import { distance2, Vec2 } from "./math/vector";
+import { distance2, Vec2 } from "./math/vector.generated";
 import { range } from "./range";
 
 export type Rect = {
@@ -47,7 +47,7 @@ export type SerializedSpatialHashTable<T> = {
 export function spatialHashTable<T>(
   htBounds: Rect,
   resolution: Vec2,
-  getBounds: (t: T) => Rect
+  getBounds: (t: T) => Rect,
 ): SpatialHashTable<T> {
   let objects = new Map<T, { buckets: number[] }>();
   let buckets = range(resolution[0] * resolution[1]).map((e) => new Set<T>());
@@ -59,8 +59,8 @@ export function spatialHashTable<T>(
         htBounds.a[0],
         htBounds.b[0],
         0,
-        resolution[0] - 1
-      )
+        resolution[0] - 1,
+      ),
     );
     const bucketXEnd = Math.ceil(
       rescaleClamped(
@@ -68,8 +68,8 @@ export function spatialHashTable<T>(
         htBounds.a[0],
         htBounds.b[0],
         0,
-        resolution[0]
-      )
+        resolution[0],
+      ),
     );
     const bucketYStart = Math.floor(
       rescaleClamped(
@@ -77,8 +77,8 @@ export function spatialHashTable<T>(
         htBounds.a[1],
         htBounds.b[1],
         0,
-        resolution[1] - 1
-      )
+        resolution[1] - 1,
+      ),
     );
     const bucketYEnd = Math.ceil(
       rescaleClamped(
@@ -86,8 +86,8 @@ export function spatialHashTable<T>(
         htBounds.a[1],
         htBounds.b[1],
         0,
-        resolution[1]
-      )
+        resolution[1],
+      ),
     );
 
     const indexes: number[] = [];
@@ -163,7 +163,7 @@ export function spatialHashTable<T>(
 export function inCircle<T>(
   sht: SpatialHashTable<T>,
   c: Circle,
-  getObjectCircle: (t: T) => Circle
+  getObjectCircle: (t: T) => Circle,
 ): Set<T> {
   const rectResult = sht.queryRect({
     a: [c.center[0] - c.radius, c.center[1] - c.radius],
@@ -177,13 +177,13 @@ export function inCircle<T>(
         distance2(objectCircle.center, c.center) <
         objectCircle.radius + c.radius
       );
-    })
+    }),
   );
 }
 
 export function serializeSpatialHashTable<T, S = T>(
   sht: SpatialHashTable<T>,
-  serializeItem?: (t: T) => S
+  serializeItem?: (t: T) => S,
 ): SerializedSpatialHashTable<S> {
   if (!serializeItem) {
     return {
@@ -198,12 +198,15 @@ export function serializeSpatialHashTable<T, S = T>(
 
   const serializedObjects: Map<T, { serialized: S; v: { buckets: number[] } }> =
     new Map(
-      [...sht.objects].map(([k, v]) => [k, { serialized: serializeItem(k), v }])
+      [...sht.objects].map(([k, v]) => [
+        k,
+        { serialized: serializeItem(k), v },
+      ]),
     );
 
   const ssht: SerializedSpatialHashTable<S> = {
     buckets: sht.buckets.map(
-      (b) => new Set([...b].map((i) => serializedObjects.get(i)?.serialized!))
+      (b) => new Set([...b].map((i) => serializedObjects.get(i)?.serialized!)),
     ),
     resolution: sht.resolution,
     bounds: sht.bounds,
@@ -211,7 +214,7 @@ export function serializeSpatialHashTable<T, S = T>(
       [...sht.objects].map(([k, v]) => [
         serializedObjects.get(k)!.serialized,
         v,
-      ])
+      ]),
     ),
   };
   return ssht;
@@ -220,7 +223,7 @@ export function serializeSpatialHashTable<T, S = T>(
 export function parseSpatialHashTable<T, S = T>(
   ssht: SerializedSpatialHashTable<S>,
   getBounds: (t: T) => Rect,
-  parseItem?: (s: S) => T
+  parseItem?: (s: S) => T,
 ): SpatialHashTable<T> {
   if (!parseItem) {
     const sht = spatialHashTable(ssht.bounds, ssht.resolution, getBounds);
@@ -233,20 +236,20 @@ export function parseSpatialHashTable<T, S = T>(
 
   const parsedObjects: Map<S, { parsed: T; v: { buckets: number[] } }> =
     new Map(
-      [...ssht.objects].map(([k, v]) => [k, { parsed: parseItem(k), v }])
+      [...ssht.objects].map(([k, v]) => [k, { parsed: parseItem(k), v }]),
     );
 
   {
     const sht = spatialHashTable(ssht.bounds, ssht.resolution, getBounds);
     sht.setBuckets(
       ssht.buckets.map(
-        (b) => new Set([...b].map((i) => parsedObjects.get(i)?.parsed!))
-      )
+        (b) => new Set([...b].map((i) => parsedObjects.get(i)?.parsed!)),
+      ),
     );
     sht.setObjects(
       new Map(
-        [...ssht.objects].map(([k, v]) => [parsedObjects.get(k)!.parsed, v])
-      )
+        [...ssht.objects].map(([k, v]) => [parsedObjects.get(k)!.parsed, v]),
+      ),
     );
     return sht;
   }

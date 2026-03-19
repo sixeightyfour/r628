@@ -22,7 +22,7 @@
     return unclampedSmoothstep(clamp(x, 0, 1));
   }
 
-  // src/math/vector.ts
+  // src/math/vector.generated.ts
   function cart2Polar(a) {
     return [length2(a), Math.atan2(a[1], a[0])];
   }
@@ -103,7 +103,7 @@
     }
     return arr;
   }
-  function smartRangeMap(n, cb2) {
+  function smartRangeMap(n, cb) {
     const a = range(n);
     const res1 = a.map((i, index, arr) => {
       return {
@@ -135,7 +135,7 @@
         start: () => i === 0
       };
     });
-    const res = res1.map(cb2);
+    const res = res1.map(cb);
     return res;
   }
   function smartRange(n) {
@@ -573,7 +573,10 @@
       };
     }
     const serializedObjects = new Map(
-      [...sht.objects].map(([k, v]) => [k, { serialized: serializeItem(k), v }])
+      [...sht.objects].map(([k, v]) => [
+        k,
+        { serialized: serializeItem(k), v }
+      ])
     );
     const ssht = {
       buckets: sht.buckets.map(
@@ -659,13 +662,13 @@
     }
     return Promise.resolve(t);
   }
-  function createRoundRobinThreadpool(src2, workerCount2, serialization2, t) {
-    const count = workerCount2 ?? navigator.hardwareConcurrency;
+  function createRoundRobinThreadpool(src, workerCount, serialization, t) {
+    const count = workerCount ?? navigator.hardwareConcurrency;
     const performanceRecords = [];
     const workers = [];
     let nextWorker = 0;
     for (let i = 0; i < count; i++) {
-      workers.push(new Worker(src2));
+      workers.push(new Worker(src));
     }
     function getNextWorker() {
       const workerChoice = nextWorker;
@@ -675,7 +678,7 @@
     let id3 = 0;
     function sendMessageToWorkerWithResponse(prop, args, workerIndex) {
       const worker = workers[workerIndex];
-      const serializationInfo = serialization2?.[prop];
+      const serializationInfo = serialization?.[prop];
       const startTime = performance.now();
       const shouldRunInMain = serializationInfo?.runMode?.(args) ?? "worker";
       if (shouldRunInMain === "main") {
@@ -703,18 +706,18 @@
         const onResponse = async (e) => {
           if (e.data.id !== myid) return;
           worker.removeEventListener("message", onResponse);
-          const parseRetVal = serialization2?.[prop]?.parseRetVal ?? ((x) => x);
+          const parseRetVal = serialization?.[prop]?.parseRetVal ?? ((x) => x);
           resolve(await parseRetVal(e.data.returnValue));
         };
         worker.addEventListener("message", onResponse);
-        const serializeArgs = serialization2?.[prop]?.serializeArgs ?? ((x) => x);
+        const serializeArgs = serialization?.[prop]?.serializeArgs ?? ((x) => x);
         worker.postMessage(
           {
             type: prop,
             args: await serializeArgs(args),
             id: myid
           },
-          serialization2?.[prop]?.transferArgs?.(args) ?? []
+          serialization?.[prop]?.transferArgs?.(args) ?? []
         );
       });
       performanceRecords.push(
@@ -763,24 +766,24 @@
       })
     };
   }
-  function createRoundRobinThread(t, serialization2) {
+  function createRoundRobinThread(t, serialization) {
     self.addEventListener("message", async (e) => {
-      const parseArgs = serialization2?.[e.data.type]?.parseArgs ?? id;
+      const parseArgs = serialization?.[e.data.type]?.parseArgs ?? id;
       const args = await parseArgs(e.data.args);
       const resp = await t[e.data.type](...args);
-      const serializeReturnValue = serialization2?.[e.data.type]?.serializeRetVal ?? id;
+      const serializeReturnValue = serialization?.[e.data.type]?.serializeRetVal ?? id;
       postMessage(
         {
           returnValue: await serializeReturnValue(resp),
           id: e.data.id
         },
         // @ts-expect-error
-        serialization2?.[e.data.type]?.transferRetVal?.(resp) ?? []
+        serialization?.[e.data.type]?.transferRetVal?.(resp) ?? []
       );
     });
   }
   function createCombinedRoundRobinThreadpool(getInterface, src, workerCount, serialization) {
-    if (eval("self.WorkerGlobalScope")) {
+    if (self.WorkerGlobalScope) {
       createRoundRobinThread(getInterface(false), serialization);
       return;
     } else {
@@ -793,7 +796,7 @@
     }
   }
   async function inMainThread(cb) {
-    if (eval("self.WorkerGlobalScope")) {
+    if (self.WorkerGlobalScope) {
       return;
     }
     return await cb();

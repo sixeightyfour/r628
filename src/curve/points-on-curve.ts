@@ -1,8 +1,8 @@
-import { distance2, mix2, Vec2 } from "../math/vector";
+import { distance2, mix2, Vec2 } from "../math/vector.generated";
 
 export function equidistantPointsOnCurve(
   curve: Vec2[],
-  interval: number
+  interval: number,
 ): Vec2[] {
   if (curve.length === 0) return [];
 
@@ -29,7 +29,7 @@ export function equidistantPointsOnCurve(
 
 export function variableDistancePointsOnCurve(
   curve: Vec2[],
-  nextDistance: (p: Vec2) => number
+  nextDistance: (p: Vec2) => number,
 ): Vec2[] {
   if (curve.length === 0) return [];
 

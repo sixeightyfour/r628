@@ -1,5 +1,5 @@
 import { multicast } from "./fp";
-import { Vec3 } from "./math/vector";
+import { Vec3 } from "./math/vector.generated";
 
 type Last<Arr extends any[]> = Arr extends [infer Final]
   ? Final
@@ -74,20 +74,20 @@ type XRay<InitRoot, Root, Access, Context, Chain extends NestedModKey[]> =
   {
     $v: Root;
     $: <T>(
-      a: T
+      a: T,
     ) => XRay<InitRoot, NestedModification<Root, Chain, T>, T, Context, Chain>;
     $s: <T>(
-      fn: (a: Access, c: Context) => T
+      fn: (a: Access, c: Context) => T,
     ) => XRay<InitRoot, NestedModification<Root, Chain, T>, T, Context, Chain>;
     $ctx: <T>(
-      fn: (a: Access, s: Context) => T
+      fn: (a: Access, s: Context) => T,
     ) => XRay<InitRoot, Root, Access, T, Chain>;
   } &
     // array-specific xray methods
     (Access extends (infer Elem)[]
       ? {
           $ec: (
-            fn: (e: Elem, i: number, c: Context) => Elem
+            fn: (e: Elem, i: number, c: Context) => Elem,
           ) => XRay<
             InitRoot,
             Root,
@@ -97,7 +97,7 @@ type XRay<InitRoot, Root, Access, Context, Chain extends NestedModKey[]> =
           >;
           $e: XRay<InitRoot, Root, Elem, number, [...Chain, number]>;
           $i: <N extends number & keyof Access>(
-            n: N
+            n: N,
           ) => XRay<InitRoot, Root, Access[N], Context, [...Chain, N]>;
         } & (Context extends any[] | undefined
           ? {
@@ -123,7 +123,7 @@ type XRay<InitRoot, Root, Access, Context, Chain extends NestedModKey[]> =
           >;
         } & {
           $m: <T extends Record<any, any>>(
-            cb: (a: Access) => T
+            cb: (a: Access) => T,
           ) => XRayWithModification<
             InitRoot,
             Root,
@@ -141,7 +141,7 @@ type XRay<InitRoot, Root, Access, Context, Chain extends NestedModKey[]> =
                 Context,
                 [...Chain, K]
               >;
-            }) => T
+            }) => T,
           ) => XRayWithModification<
             InitRoot,
             Root,
@@ -213,14 +213,14 @@ function xrayMulticast(xrs: any[]) {
 
         return res;
       },
-    }
+    },
   );
 }
 
 export const xrayInner = <A>(
   a: A,
   ctx: any,
-  set: (a: any) => any
+  set: (a: any) => any,
 ): XRay<A, A, A, undefined, []> =>
   new Proxy(
     {},
@@ -242,12 +242,12 @@ export const xrayInner = <A>(
           } else if (prop === "$ec") {
           } else if (prop === "$en") {
             return xrayMulticast(
-              a.map((e, i) => xrayInner(e, [...(ctx ?? []), i], (x) => x))
+              a.map((e, i) => xrayInner(e, [...(ctx ?? []), i], (x) => x)),
             );
           } else if (prop === "$i") {
             return (p) =>
               xrayInner(a[p as keyof A], ctx, (x) =>
-                set(a.map((e, i) => (i === p ? x : e)))
+                set(a.map((e, i) => (i === p ? x : e))),
               );
           }
         } else if (typeof a === "object" && a) {
@@ -257,7 +257,7 @@ export const xrayInner = <A>(
                 set({
                   ...a,
                   ...cb(a, ctx),
-                })
+                }),
               );
           } else if (prop === "$mx") {
           } else {
@@ -265,12 +265,12 @@ export const xrayInner = <A>(
               set({
                 ...a,
                 [prop]: x,
-              })
+              }),
             );
           }
         }
       },
-    }
+    },
   ) as XRay<A, A, A, undefined, []>;
 
 // export const xr: <R, A, C, Ch extends NestedModKey[]>() => ((

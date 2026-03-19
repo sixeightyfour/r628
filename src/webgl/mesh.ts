@@ -7,7 +7,7 @@ import {
   Vec2,
   Vec3,
   Vec4,
-} from "../math/vector";
+} from "../math/vector.generated";
 
 type MeshAttrs = Record<string, [number] | Vec2 | Vec3 | Vec4>;
 
@@ -17,7 +17,7 @@ export function parametric2D<T extends string>(
   x: number,
   y: number,
   attr: T,
-  getPoint: (i: number, y: number) => Vec3
+  getPoint: (i: number, y: number) => Vec3,
 ): Mesh<{ [K in T]: Vec3 }> {
   const data: Mesh<{ [K in T]: Vec3 }> = [];
   for (let j = 0; j < y; j++) {
@@ -47,7 +47,7 @@ export function uvSphere<T extends string>(
   x: number,
   y: number,
   rad: number,
-  attr: T
+  attr: T,
 ): Mesh<{ [K in T]: Vec3 }> {
   return parametric2D<T>(x, y, attr, (i, j) => {
     const a = (((i + x) % x) / x) * Math.PI * 2;
@@ -64,7 +64,7 @@ export function ring<T extends string>(
   x: number,
   rad: number,
   height: number,
-  attr: T
+  attr: T,
 ): Mesh<{ [K in T]: Vec3 }> {
   return parametric2D<T>(x, 1, attr, (i, j) => {
     const a = (((i + x) % x) / x) * Math.PI * 2;
@@ -80,7 +80,7 @@ export function torus<T extends string>(
   y: number,
   R: number,
   r: number,
-  attr: T
+  attr: T,
 ): Mesh<{ [K in T]: Vec3 }> {
   return parametric2D<T>(x, y, attr, (i, j) => {
     const a = (((i + x) % x) / x) * Math.PI * 2;
@@ -97,7 +97,7 @@ export function torus<T extends string>(
 export function move<T extends MeshAttrs>(
   mesh: Mesh<T>,
   attr: keyof T,
-  offset: number[]
+  offset: number[],
 ): Mesh<T> {
   return mesh.map((m) => ({
     ...m,
@@ -109,7 +109,7 @@ export function perspective(
   fieldOfViewInRadians: number,
   aspectRatio: number,
   near: number,
-  far: number
+  far: number,
 ): Mat4 {
   const f = 1.0 / Math.tan(fieldOfViewInRadians / 2);
   const rangeInv = 1 / (near - far);
@@ -140,7 +140,7 @@ export function ortho(
   top: number,
   bottom: number,
   near: number,
-  far: number
+  far: number,
 ): Mat4 {
   return [
     2 / (right - left),
@@ -171,7 +171,7 @@ export function rodrigues(v: Vec3, k: Vec3, theta: number): Vec3 {
   k = normalize(k);
   return add3(
     add3(scale3(v, Math.cos(theta)), scale3(cross(k, v), Math.sin(theta))),
-    scale3(k, dot3(k, v) * (1 - Math.cos(theta)))
+    scale3(k, dot3(k, v) * (1 - Math.cos(theta))),
   );
 }
 

@@ -58,7 +58,7 @@ function createFunctionVariants(
   basename: string,
   params: ((count: number) => string)[],
   returnType: (count: number) => string,
-  opFormat: (index: number) => string
+  opFormat: (index: number) => string,
 ) {
   let outstr = "";
   for (const size of [2, 3, 4]) {
@@ -76,7 +76,7 @@ function createFunctionVariantsFullBody(
   basename: string,
   params: ((count: number) => string)[],
   returnType: (count: number) => string,
-  body: (index: number) => string
+  body: (index: number) => string,
 ) {
   let outstr = "";
   for (const size of [2, 3, 4]) {
@@ -140,7 +140,7 @@ function genMatmul(a: CC, b: CC, c: CC) {
                   b === 1 && c === 1
                     ? "b"
                     : `b[${columnMajorIndex([c, b], [row, i])}]`
-                }`
+                }`,
             )
             .join("+");
         })
@@ -240,7 +240,7 @@ export function componentwise4(a: Vec4, f: (x: number) => number): Vec4 {
 ${cartesianProduct(
   rangeFrom(1, 5) as (2 | 3 | 4)[],
   rangeFrom(1, 5) as (2 | 3 | 4)[],
-  rangeFrom(1, 5) as (2 | 3 | 4)[]
+  rangeFrom(1, 5) as (2 | 3 | 4)[],
 )
   .map(([i, j, k]) => genMatmul(i, j, k))
   .join("\n")}
@@ -254,75 +254,73 @@ ${cartesianProduct(
     "min",
     [vec, vec],
     vec,
-    (i) => `Math.min(a[${i}], b[${i}])`
+    (i) => `Math.min(a[${i}], b[${i}])`,
   ) +
   createFunctionVariants(
     "max",
     [vec, vec],
     vec,
-    (i) => `Math.max(a[${i}], b[${i}])`
+    (i) => `Math.max(a[${i}], b[${i}])`,
   ) +
   createFunctionVariants("neg", [vec], vec, (i) => `-a[${i}]`) +
   createFunctionVariantsFullBody(
     "normalize",
     [vec],
     vec,
-    (i) => `scale${i}(a, 1 / Math.sqrt(dot${i}(a, a)))`
+    (i) => `scale${i}(a, 1 / Math.sqrt(dot${i}(a, a)))`,
   ) +
   createFunctionVariantsFullBody(
     "length",
     [vec],
     num,
-    (i) => `Math.sqrt(dot${i}(a, a))`
+    (i) => `Math.sqrt(dot${i}(a, a))`,
   ) +
   createFunctionVariantsFullBody(
     "distance",
     [vec, vec],
     num,
-    (i) => `length${i}(sub${i}(a, b))`
+    (i) => `length${i}(sub${i}(a, b))`,
   ) +
   createFunctionVariantsFullBody(
     "mix",
     [num, vec, vec],
     vec,
-    (i) => `add${i}(b, scale${i}(sub${i}(c, b), a))`
+    (i) => `add${i}(b, scale${i}(sub${i}(c, b), a))`,
   ) +
   createFunctionVariantsFullBody(
     "rescale",
     [vec, num],
     vec,
-    (i) => `scale${i}(normalize${i}(a), b)`
+    (i) => `scale${i}(normalize${i}(a), b)`,
   ) +
   createFunctionVariantsFullBody(
     "remap",
     [vec, vec, vec, vec, vec],
     vec,
     (i) =>
-      `add${i}(d, mul${i}(sub${i}(e, d), div${i}(sub${i}(a, b), sub${i}(c, b))))`
+      `add${i}(d, mul${i}(sub${i}(e, d), div${i}(sub${i}(a, b), sub${i}(c, b))))`,
   ) +
   createFunctionVariantsFullBody(
     "interp",
     [vec, vec, vec, (i) => `(x: number) => number`],
     vec,
-    (i) => `add${i}(b, mul${i}(sub${i}(c, b), componentwise${i}(a, d)))`
+    (i) => `add${i}(b, mul${i}(sub${i}(c, b), componentwise${i}(a, d)))`,
   ) +
   createFunctionVariantsFullBody("sum", [vec], num, (i) =>
     i == 4
       ? "a[0] + a[1] + a[2] + a[3]"
       : i == 3
         ? "a[0] + a[1] + a[2]"
-        : "a[0] + a[1]"
+        : "a[0] + a[1]",
   ) +
   createFunctionVariantsFullBody(
     "dot",
     [vec, vec],
     num,
-    (i) => `sum${i}(mul${i}(a, b))`
+    (i) => `sum${i}(mul${i}(a, b))`,
   ) +
   createFunctionVariants("scale", [vec, num], vec, (i) => `a[${i}] * b`);
 await fs.writeFile(
-  path.join(__dirname, "vector.ts"),
-  await prettier.format(vectorLib, { parser: "typescript", semi: false })
+  path.join(__dirname, "vector.generated.ts"),
+  await prettier.format(vectorLib, { parser: "typescript", semi: false }),
 );
-
-console.log("vector codegen complete!");

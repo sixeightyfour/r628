@@ -1,4 +1,4 @@
-import { add2, scale2, sub2, Vec2 } from "../src/math/vector";
+import { add2, scale2, sub2, Vec2 } from "../src/math/vector.generated";
 import { range, smartRange } from "../src/range";
 import { Circle, inCircle, spatialHashTable } from "../src/spatial-hash-table";
 

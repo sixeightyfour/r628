@@ -186,9 +186,17 @@ function UI(
   padding-block: 7px;
   font-size: 80%;
   transition: opacity 0.5s;
-  max-height: 50vh;
+  max-height: 100vh;
   overflow: auto;
+  box-sizing: border-box;
 }
+
+@media (max-width: 1000px) {
+  .ui-root {
+    max-height: 50vh;
+  }
+}
+
 
 h1 {
   font-size: 1.2em;

@@ -11,7 +11,7 @@ import {
   Vec2,
   Vec3,
   Vec4,
-} from "../math/vector";
+} from "../math/vector.generated";
 
 type FromEntries<Entries extends [string | symbol | number, any][]> =
   Entries extends [
@@ -89,7 +89,7 @@ type FormatName = "f32" | "i32" | "u32" | "f16";
 
 function getWgslPrimitiveDatatype(
   typename: string,
-  formatname: FormatName | undefined
+  formatname: FormatName | undefined,
 ): FormatName {
   // handle vec2<f32> and stuff like that
   if (formatname) return formatname;
@@ -144,7 +144,7 @@ function setWgslPrimitive(
   formatname: string | undefined,
   view: DataView,
   offset: number,
-  data: number[]
+  data: number[],
 ) {
   const datatype = getWgslPrimitiveDatatype(typename, formatname as FormatName);
   const size = getWgslPrimitiveSize(typename);
@@ -194,7 +194,7 @@ function generateUniformBufferInner<Spec extends Record<any, any>>(
   spec: Spec,
   values: any,
   view: DataView,
-  offset: number
+  offset: number,
 ) {
   if (spec.members) {
     for (const m of spec.members)
@@ -202,7 +202,7 @@ function generateUniformBufferInner<Spec extends Record<any, any>>(
         m.type,
         values[m.name],
         view,
-        offset + m.offset
+        offset + m.offset,
       );
     return;
   }
@@ -215,7 +215,7 @@ function generateUniformBufferInner<Spec extends Record<any, any>>(
         spec.format,
         values[i],
         view,
-        offset + spec.stride * i
+        offset + spec.stride * i,
       );
     }
   } else {
@@ -224,7 +224,7 @@ function generateUniformBufferInner<Spec extends Record<any, any>>(
       spec.format?.name,
       view,
       offset,
-      Array.isArray(values) ? values : [values]
+      Array.isArray(values) ? values : [values],
     );
   }
 }
@@ -233,7 +233,7 @@ export function generateUniformBuffer<Spec extends Record<any, any>>(
   spec: Spec & { size: number },
   values: ParseUniform<Spec>,
   buffer?: ArrayBuffer,
-  byteOffset?: number
+  byteOffset?: number,
 ): ArrayBuffer {
   const buf = buffer ?? new ArrayBuffer(spec.size);
   const view = new DataView(buf, byteOffset);
@@ -248,7 +248,7 @@ export function getUniformBufferSize<
 >(
   spec: Spec,
   group: Group,
-  binding: Binding
+  binding: Binding,
 ): Spec["bindGroups"][Group][Binding]["type"]["size"] {
   return spec.bindGroups[group][binding].type.size;
 }
@@ -263,12 +263,12 @@ export function makeUniformBuffer<
   binding: Binding,
   data: ParseUniform<Spec["bindGroups"][Group][Binding]["type"]>,
   buffer?: ArrayBuffer,
-  byteOffset?: number
+  byteOffset?: number,
 ) {
   return generateUniformBuffer(
     spec.bindGroups[group][binding].type,
     data,
     buffer,
-    byteOffset
+    byteOffset,
   );
 }

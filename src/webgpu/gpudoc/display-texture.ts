@@ -1,4 +1,4 @@
-import { Vec2, Vec4 } from "../../math/vector";
+import { Vec2, Vec4 } from "../../math/vector.generated";
 import { memo } from "../../memo";
 import {
   SAMPLER_TYPE_TO_WGSL_TYPE,
@@ -10,7 +10,7 @@ import { createSimpleFilterPipeline } from "../simple-filter";
 function create2dShaderFormat(
   device: GPUDevice,
   samplerType: "float" | "uint" | "sint" | "depth",
-  outputFormat: TextureFormat
+  outputFormat: TextureFormat,
 ) {
   console.log("creating new pipeline", samplerType, outputFormat);
   return createSimpleFilterPipeline(device, {
@@ -43,7 +43,7 @@ dst = (pixel - params.blackEquiv) / (params.whiteEquiv - params.blackEquiv);
 export function textureDisplayer(device: GPUDevice) {
   const getDisplayerPipeline = memo(
     (samplerType, outputFormat: TextureFormat) =>
-      create2dShaderFormat(device, samplerType, outputFormat)
+      create2dShaderFormat(device, samplerType, outputFormat),
   );
 
   return {
@@ -60,7 +60,7 @@ export function textureDisplayer(device: GPUDevice) {
         tex: GPUTextureView;
         format: TextureFormat;
       },
-      encoder: GPUCommandEncoder
+      encoder: GPUCommandEncoder,
     ) {
       const pipeline = getDisplayerPipeline(src.samplerType, dst.format);
 

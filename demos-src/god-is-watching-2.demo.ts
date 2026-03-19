@@ -41,7 +41,7 @@ import {
   scale2,
   sub2,
   Vec2,
-} from "../src/math/vector";
+} from "../src/math/vector.generated";
 import { id, rand, range, smartRange } from "../src/range";
 import {
   Circle,

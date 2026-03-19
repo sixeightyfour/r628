@@ -17,7 +17,7 @@ const threadpool = createCombinedRoundRobinThreadpool(() => ({
 
 async function main() {
   console.log(
-    await Promise.all(range(100).map((d) => threadpool.send.double(d)))
+    await Promise.all(range(100).map((d) => threadpool.send.double(d))),
   );
 
   console.log(await threadpool.broadcast.setX(10));
@@ -25,8 +25,9 @@ async function main() {
   console.log(await threadpool.broadcast.setX(3));
   console.log(await threadpool.broadcast.addX(5));
   console.log(
-    await Promise.all(range(100).map((d) => threadpool.send.addX(d)))
+    await Promise.all(range(100).map((d) => threadpool.send.addX(d))),
   );
 }
 
-if (!eval("self.WorkerGlobalScope")) main();
+// @ts-expect-error
+if (!self.WorkerGlobalScope) main();

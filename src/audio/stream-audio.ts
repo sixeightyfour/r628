@@ -9,7 +9,7 @@
 import { OneDimensionalSpatialHashTable } from "../1d-spatial-hash-table";
 import { argmin } from "../array-utils";
 import { clamp, lerp, rescale } from "../interpolation";
-import { Vec2 } from "../math/vector";
+import { Vec2 } from "../math/vector.generated";
 import { memo } from "../memo";
 import {
   arrayToObjKeys,
@@ -29,10 +29,10 @@ export type TrackSpec<Channels extends string> = {
 export function createTrack<Channels extends string>(
   channels: Channels[],
   sampleRate: number,
-  constituents: TrackSpec<Channels>
+  constituents: TrackSpec<Channels>,
 ) {
   const maxlen = Math.max(
-    ...constituents.map((c) => c.start + c.audio.duration)
+    ...constituents.map((c) => c.start + c.audio.duration),
   );
 
   const sht = new OneDimensionalSpatialHashTable<{
@@ -59,8 +59,8 @@ export function createTrack<Channels extends string>(
 
       const inputs = await Promise.all(
         [...audio].map((e) =>
-          e.audio.getRange(start - Math.ceil(e.start * sampleRate), count)
-        )
+          e.audio.getRange(start - Math.ceil(e.start * sampleRate), count),
+        ),
       );
 
       for (const ch of channels) {
@@ -85,7 +85,7 @@ export class AudioStream<Channels extends string> {
     duration: number;
     getRange: (
       start: number,
-      count: number
+      count: number,
     ) => Promise<Record<Channels, Float32Array> | undefined>;
   }) {
     this.getRange = async (start, count) => {
@@ -95,7 +95,7 @@ export class AudioStream<Channels extends string> {
 
       const range = await params.getRange(
         clampedStart,
-        clampedEnd - clampedStart
+        clampedEnd - clampedStart,
       );
 
       if (clampedEnd - clampedStart == count) return range;
@@ -130,7 +130,7 @@ export class AudioStream<Channels extends string> {
 
   getRange: (
     start: number,
-    count: number
+    count: number,
   ) => Promise<Record<Channels, Float32Array> | undefined>;
 
   gain(gain: MonoOrMulti<Channels>) {
@@ -139,7 +139,7 @@ export class AudioStream<Channels extends string> {
       this.sampleRate,
       [this, gain],
       (time, sample, a, g) => mapObjValues(a, (k, x) => x * g[k]),
-      this.duration
+      this.duration,
     );
   }
 
@@ -148,7 +148,7 @@ export class AudioStream<Channels extends string> {
       this.channels,
       this.sampleRate,
       [this, stream],
-      (time, sample, a, b) => mapObjValues(a, (k, x) => x + b[k])
+      (time, sample, a, b) => mapObjValues(a, (k, x) => x + b[k]),
     );
   }
 
@@ -160,7 +160,7 @@ export class AudioStream<Channels extends string> {
       getRange: (start2: number, count2: number) => {
         return this.getRange(
           start2 + Math.floor(start * this.sampleRate),
-          count2
+          count2,
         );
       },
     });
@@ -184,8 +184,8 @@ export class AudioStream<Channels extends string> {
           (ch, v) =>
             overlapSaveConvolve(
               new Float32Array(v),
-              new Float32Array(kern[ch])
-            ).slice(0, count)
+              new Float32Array(kern[ch]),
+            ).slice(0, count),
         );
       },
     });
@@ -265,7 +265,7 @@ const getOptimumOverlapSaveFilterSize = memo((M: number) => {
 
   return argmin(
     powersOfTwo.filter((N) => cost(M, N) > 0) as [number, ...number[]],
-    (N) => cost(M, N)
+    (N) => cost(M, N),
   );
 });
 
@@ -321,7 +321,7 @@ export function createSignal<Channels extends string>(params: {
         new Float32Array(
           range(count).map((s) => {
             return v((s + start) / this.sampleRate, s + start);
-          })
+          }),
         ),
       ]);
     },
@@ -334,7 +334,7 @@ function sameSignalOnData<Channels extends string>(
   sampleRate: number,
   channels: Channels[],
   duration: number,
-  f: (time: number, sample: number) => number
+  f: (time: number, sample: number) => number,
 ) {
   return createSignal({
     channels,
@@ -352,13 +352,13 @@ function waveform<Channels extends string>(
   frequency: number,
   amplitude: number,
   phase: number,
-  profile: (f: number) => number
+  profile: (f: number) => number,
 ) {
   return sameSignalOnData(
     sampleRate,
     channels,
     seconds,
-    (t) => amplitude * profile((t * frequency + phase) % 1)
+    (t) => amplitude * profile((t * frequency + phase) % 1),
   );
 }
 
@@ -366,7 +366,7 @@ async function getRangeAndResample<Channels extends string>(
   src: AudioStream<Channels>,
   dstStart: number,
   dstCount: number,
-  dstSampleRate: number
+  dstSampleRate: number,
 ): Promise<Record<Channels, Float32Array>> {
   // fallthrough case for same sample rate
   if (src.sampleRate === dstSampleRate) {
@@ -395,20 +395,20 @@ async function getRangeAndResample<Channels extends string>(
         const srcSampleNext = srcSamplePrev + 1;
 
         return lerp(sourceIndex % 1, v[srcSamplePrev], v[srcSampleNext]);
-      })
+      }),
     );
   });
 }
 
 function resample<Channels extends string>(
   audio: AudioStream<Channels>,
-  targetSampleRate: number
+  targetSampleRate: number,
 ) {
   return combineAudio(
     audio.channels,
     targetSampleRate,
     [audio] as const,
-    (time, sample, ch) => ch
+    (time, sample, ch) => ch,
   );
 }
 
@@ -426,7 +426,7 @@ function combineAudio<
   ) => {
     [K in Channels]: number;
   },
-  customDuration?: number
+  customDuration?: number,
 ): AudioStream<Channels> {
   // derive duration and sample count from largest of all inputs
   const duration = customDuration
@@ -448,17 +448,17 @@ function combineAudio<
               a as AudioStream<string>,
               start,
               count,
-              sampleRate
+              sampleRate,
             ),
-            (k, v) => new Float32Array(v)
-          )
-        )
+            (k, v) => new Float32Array(v),
+          ),
+        ),
       );
 
       // create dst audio
       const ch: Record<Channels, Float32Array> = arrayToObjKeys(
         channels,
-        (k) => new Float32Array(count)
+        (k) => new Float32Array(count),
       );
 
       // fill dst audio
@@ -481,7 +481,7 @@ function combineAudio<
           (start + i) / sampleRate,
           start + i,
           // @ts-expect-error
-          ...samples
+          ...samples,
         );
 
         for (const c of channels) {
@@ -498,7 +498,7 @@ function combineAudio<
 function broadcastTo<Channels extends string>(
   channels: Channels[],
   sampleRate: number,
-  mono: MonoOrMulti<Channels>
+  mono: MonoOrMulti<Channels>,
 ) {
   return combineAudio(channels, sampleRate, [mono], (_, __, x) => x);
 }
@@ -525,7 +525,7 @@ const createLowPassFilter = memo(
     channels: T[],
     sampleRate: number,
     freq: number,
-    cycles: number
+    cycles: number,
   ) => {
     const oneCycleSampleCount = Math.ceil((1 / freq) * sampleRate);
     const sampleCount = oneCycleSampleCount * cycles;
@@ -545,10 +545,10 @@ const createLowPassFilter = memo(
         channels,
         () => (t, s) =>
           lowPassFilterSample(s, sampleCount, cutoff) *
-          hannSample(s, sampleCount)
+          hannSample(s, sampleCount),
       ),
     }).preload();
-  }
+  },
 );
 
 export class AudioBuilder<Channels extends string> {
@@ -565,13 +565,13 @@ export class AudioBuilder<Channels extends string> {
       this.channels,
       this.sampleRate,
       freq,
-      cycles
+      cycles,
     ) as AudioStream<Channels>;
   }
 
   signal(
     duration: number,
-    constructors: Parameters<typeof createSignal>[0]["constructors"]
+    constructors: Parameters<typeof createSignal>[0]["constructors"],
   ) {
     return createSignal({
       sampleRate: this.sampleRate,
@@ -586,7 +586,7 @@ export class AudioBuilder<Channels extends string> {
     frequency: number,
     amplitude: number,
     phase: number,
-    profile: (f: number) => number
+    profile: (f: number) => number,
   ) {
     return waveform(
       this.sampleRate,
@@ -595,7 +595,7 @@ export class AudioBuilder<Channels extends string> {
       frequency,
       amplitude,
       phase,
-      profile
+      profile,
     );
   }
 
@@ -612,27 +612,27 @@ export class AudioBuilder<Channels extends string> {
   sine(
     frequency: number,
     amplitude: number = 1,
-    phase: number = 0
+    phase: number = 0,
   ): AudioStream<Channels> {
     return this.waveform(frequency, amplitude, phase, (x) =>
-      Math.sin(x * Math.PI * 2)
+      Math.sin(x * Math.PI * 2),
     );
   }
 
   square(
     frequency: number,
     amplitude: number = 1,
-    phase: number = 0
+    phase: number = 0,
   ): AudioStream<Channels> {
     return this.waveform(frequency, amplitude, phase, (x) =>
-      x > 0.5 ? -1 : 1
+      x > 0.5 ? -1 : 1,
     );
   }
 
   saw(
     frequency: number,
     amplitude: number = 1,
-    phase: number = 0
+    phase: number = 0,
   ): AudioStream<Channels> {
     return this.waveform(frequency, amplitude, phase, (x) => x * 2.0 - 1.0);
   }
@@ -645,7 +645,7 @@ export class AudioBuilder<Channels extends string> {
       length: Infinity,
       constructors: arrayToObjKeys(
         this.channels,
-        () => () => (Math.random() * 2.0 - 1.0) * amplitude
+        () => () => (Math.random() * 2.0 - 1.0) * amplitude,
       ),
     });
   }
@@ -667,7 +667,7 @@ export class AudioBuilder<Channels extends string> {
     const sampleCount = Math.ceil(length * this.sampleRate);
     return this.constant(area / sampleCount).clip(
       0,
-      sampleCount / this.sampleRate
+      sampleCount / this.sampleRate,
     );
   }
 
@@ -679,7 +679,7 @@ export class AudioBuilder<Channels extends string> {
     s: number,
     st: number,
     r: number,
-    rt: number
+    rt: number,
   ) {
     return this.adsrgen(a, d, s, r)(at, dt, st, rt);
   }
@@ -713,19 +713,21 @@ export async function playStereo(audio: AudioStream<"left" | "right">) {
 }
 
 export function isWorklet() {
-  return eval("globalThis.registerProcessor") !== undefined;
+  return globalThis.registerProcessor !== undefined;
 }
 
 const BLOCKSIZE = 8192;
 
 export async function initBufferStreamerWorklet(src: string) {
   if (isWorklet()) {
-    eval("registerProcessor")(
+    globalThis.registerProcessor(
       "buffer-streamer",
-      class extends eval("AudioWorkletProcessor") {
+      // @ts-expect-error
+      class extends AudioWorkletProcessor {
         constructor() {
           super();
 
+          // @ts-expect-error
           this.port.onmessage = async (e) => {
             const data = e.data;
             if (data.type === "buffer") {
@@ -769,7 +771,7 @@ export async function initBufferStreamerWorklet(src: string) {
 
           return true;
         }
-      }
+      },
     );
   } else {
     return async (ctx: AudioContext) => {
@@ -788,7 +790,7 @@ export async function initBufferStreamerWorklet(src: string) {
                   right: right.buffer,
                 },
               },
-              [left.buffer, right.buffer]
+              [left.buffer, right.buffer],
             );
           },
         };
@@ -805,7 +807,7 @@ const CHUNKSIZE = 2048 * 16;
 
 export function streamAudioToWorklet(
   stream: AudioStream<"left" | "right">,
-  bs: BufferStreamer
+  bs: BufferStreamer,
 ) {
   let t = 0;
 
@@ -825,7 +827,7 @@ export function streamAudioToWorklet(
 export function displayAudioSamples(
   samples: Float32Array,
   size: Vec2,
-  amp: number = 1
+  amp: number = 1,
 ) {
   const canvas = document.createElement("canvas");
   const ctx = canvas.getContext("2d");
@@ -837,7 +839,7 @@ export function displayAudioSamples(
   for (const i of smartRange(samples.length)) {
     ctx.lineTo(
       i.remap(0, canvas.width),
-      rescale(samples[i.i], -amp, amp, 0, size[1])
+      rescale(samples[i.i], -amp, amp, 0, size[1]),
     );
   }
   ctx.stroke();
@@ -849,7 +851,7 @@ export async function displayAudio(
   stream: AudioStream<"left" | "right">,
   amp: number = 1,
   res: Vec2 = [1000, 200],
-  chunks: number = 1
+  chunks: number = 1,
 ) {
   const len = Math.ceil(stream.duration * stream.sampleRate);
 
@@ -857,13 +859,13 @@ export async function displayAudio(
   const right = new Float32Array(len);
 
   let divisions = smartRange(chunks + 1).map((c) =>
-    Math.floor(c.remap(0, len, true))
+    Math.floor(c.remap(0, len, true)),
   );
 
   for (let i of range(chunks)) {
     const audio = await stream.getRange(
       divisions[i],
-      divisions[i + 1] - divisions[i]
+      divisions[i + 1] - divisions[i],
     );
     const l = new Float32Array(audio.left);
     const r = new Float32Array(audio.right);
