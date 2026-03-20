@@ -24,7 +24,6 @@ export type UIState = {
   lineWidth: number;
   farPlane: number;
   showLabelThreshold: number;
-
   physics: boolean;
   repulsionMultiplier: number;
   attractionMultiplier: number;
@@ -32,19 +31,21 @@ export type UIState = {
   repulsionExponent: number;
   simulationAccuracy: number;
   timestep: number;
-
   tags: string;
   positions: Blob | undefined;
+
+  useNodeColors: boolean;
+  nodeColor: string;
+  useEdgeColors: boolean;
+  edgeColor: string;
 };
 
 const DEFAULT_UI_STATE: UIState = {
   uiMode: "auto",
-
   viewerSpeed: 1,
   lineWidth: 0.2,
   farPlane: 2000,
   showLabelThreshold: 50,
-
   physics: true,
   repulsionMultiplier: 1,
   attractionMultiplier: 1,
@@ -52,9 +53,13 @@ const DEFAULT_UI_STATE: UIState = {
   repulsionExponent: 2,
   simulationAccuracy: 1 / 1.2,
   timestep: 0.06,
-
   tags: "",
   positions: undefined,
+
+  useNodeColors: true,
+  nodeColor: "#b4b4b4",
+  useEdgeColors: true,
+  edgeColor: "#7f7f7f",
 };
 
 export type GraphRendererUI = {
@@ -262,6 +267,32 @@ h2 {
           <NumberFieldM {...prop("farPlane")} min={0}></NumberFieldM>
           <label>Show Label Threshold</label>
           <NumberFieldM {...prop("showLabelThreshold")} min={0}></NumberFieldM>
+        </div>
+        <h2>Appearance</h2>
+        <div className="ui-object">
+          <label>Use Node Colors</label>
+          <BooleanField {...prop("useNodeColors")} />
+
+          <label>Node Color</label>
+          <input
+            type="color"
+            value={state.state.nodeColor}
+            onChange={(e) =>
+              state.setState((s) => ({ ...s, nodeColor: e.target.value }))
+            }
+          />
+
+          <label>Use Edge Colors</label>
+          <BooleanField {...prop("useEdgeColors")} />
+
+          <label>Edge Color</label>
+          <input
+            type="color"
+            value={state.state.edgeColor}
+            onChange={(e) =>
+              state.setState((s) => ({ ...s, edgeColor: e.target.value }))
+            }
+          />
         </div>
         <h2>Physics</h2>
         <div className="ui-object">
