@@ -249,6 +249,8 @@ export async function setupGraphRenderer(device: GPUDevice) {
       src: "u32",
       dst: "u32",
       color_mul: "f32",
+      use_custom_color: "u32",
+      color: "vec4f",
     }),
   );
 
@@ -404,9 +406,14 @@ fn set_point(idx: u32, across: f32, width: f32) {
       let margin = 0.8 / dist; 
       endpoint1 = mix(src.position, dst.position, margin);
       endpoint2 = mix(src.position, dst.position, 1 - margin);
-      color1 = src.color;
-      color2 = dst.color;
       color_mul = edges[i].color_mul;
+      if (edges[i].use_custom_color == 1u) {
+        color1 = edges[i].color;
+        color2 = edges[i].color;
+      } else {
+        color1 = src.color;
+        color2 = dst.color;
+      }
 
       set_point(ipt, 0.0, 1.0);
       set_point(ipt + 1, 0.1, 0.25);
@@ -601,6 +608,45 @@ user-select: none;
         }
       }
 
+
+            function hexToRgba8(
+        hex: string | undefined,
+        fallback: Vec4 = [180, 180, 180, 255],
+      ): Vec4 {
+        const clean = `${hex ?? ""}`.replace("#", "").trim();
+        if (!/^[0-9a-fA-F]{6}$/.test(clean)) return fallback;
+
+        const n = parseInt(clean, 16);
+        return [
+          (n >> 16) & 255,
+          (n >> 8) & 255,
+          n & 255,
+          255,
+        ];
+      }
+
+      function rgba8ToVec4(color: Vec4): Vec4 {
+        return [
+          color[0] / 255,
+          color[1] / 255,
+          color[2] / 255,
+          color[3] / 255,
+        ];
+      }
+
+      function edgeColorFromBase(color: Vec4, factor: number): Vec4 {
+        return [
+          color[0] * factor,
+          color[1] * factor,
+          color[2] * factor,
+          color[3],
+        ];
+      }
+
+      const fallbackNodeColor = hexToRgba8(params.ui.state.nodeColor);
+      const fallbackEdgeColor = hexToRgba8(params.ui.state.edgeColor);
+      const fallbackEdgeColorVec4 = rgba8ToVec4(fallbackEdgeColor);
+      
       function getNodeColor(url: string): Vec4 {
         const tags = urlToNodeData.get(url)?.tags ?? [];
         const tagWeights = tags.map((t) => ({
@@ -650,7 +696,7 @@ user-select: none;
           url,
           addVertex(graph, {
             position: add3(position, [0, 0, 0]),
-            color: getNodeColor(url),
+            color: params.ui.state.useNodeColors ? getNodeColor(url) : fallbackNodeColor,
             initialized: false,
             label: slug,
             slug,
@@ -716,16 +762,22 @@ user-select: none;
         [...graph.edges].flatMap((e) => {
           const factor = Math.random() * 0.2 + 0.4;
 
-          const colorMul = [factor, factor, factor, 1] as Vec4;
+          const srcColor = params.ui.state.useEdgeColors
+            ? edgeColorFromBase(fallbackEdgeColor, factor)
+            : edgeColorFromBase(e.endpoints[0].data.color, factor);
+
+          const dstColor = params.ui.state.useEdgeColors
+            ? edgeColorFromBase(fallbackEdgeColor, factor)
+            : edgeColorFromBase(e.endpoints[1].data.color, factor);
 
           return [
             {
               position: e.endpoints[0].data.position,
-              color: mul4(e.endpoints[0].data.color, colorMul),
+              color: srcColor,
             },
             {
               position: e.endpoints[1].data.position,
-              color: mul4(e.endpoints[1].data.color, colorMul),
+              color: dstColor,
             },
           ];
         }),
@@ -773,6 +825,8 @@ user-select: none;
             src: startIndex,
             dst: endIndex,
             color_mul: Math.random() * 0.3 + 0.3,
+            use_custom_color: params.ui.state.useEdgeColors ? 1 : 0,
+            color: fallbackEdgeColorVec4,
           });
           if (startIndex === endIndex) continue;
           const weight = 1;
