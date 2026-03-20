@@ -21453,7 +21453,7 @@
   var import_react2 = __toESM(require_react());
   var import_client = __toESM(require_client());
 
-  // raw-ns:/mnt/c/Users/baker/Documents/GitHub/r628/demos-src/iso-8601.css?raw
+  // raw-ns:C:\Users\danny\OneDrive\Documents\GitHub\r628\demos-src\iso-8601.css?raw
   var iso_8601_default = "body {\r\n  background-color: #eee;\r\n}\r\n\r\n:root {\r\n  --fontsize: min(3vw, 30px);\r\n  --labelfontsize: min(2vw, 20px);\r\n}\r\n\r\n.converter {\r\n  font-size: var(--fontsize);\r\n  position: absolute;\r\n  top: 50vh;\r\n  left: 50vw;\r\n  transform: translate(-50%, -50%);\r\n  font-family: monospace;\r\n  display: grid;\r\n  grid-template-columns: repeat(2, auto);\r\n  grid-template-rows: repeat(2, auto);\r\n  align-items: center;\r\n  color: #333;\r\n  width: max-content;\r\n  max-width: 100vw;\r\n}\r\n\r\n.converter > * {\r\n  min-width: 0;\r\n}\r\n\r\n.converter > input {\r\n  font-size: var(--fontsize);\r\n  padding: 10px;\r\n  margin-left: 20px;\r\n  border: none;\r\n  background-color: #ddd;\r\n  border-radius: 10px;\r\n  box-shadow: 5px 5px 9px inset #0004;\r\n}\r\n\r\n.converter button {\r\n  font-size: var(--fontsize);\r\n  background-color: white;\r\n  box-shadow: 5px 5px 9px #0004;\r\n  align-self: right;\r\n  border-radius: 10px;\r\n  border: none;\r\n  padding: 10px;\r\n  cursor: pointer;\r\n  margin-left: 20px;\r\n}\r\n\r\n.converter > label {\r\n  font-size: var(--labelfontsize);\r\n  text-align: right;\r\n}\r\n\r\n.output {\r\n  padding-block: 10px;\r\n  margin-left: 20px;\r\n  display: grid;\r\n  grid-template-columns: repeat(2, auto);\r\n  align-items: center;\r\n}\r\n";
 
   // src/ui/react-datetime-field.tsx

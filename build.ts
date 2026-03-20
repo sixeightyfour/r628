@@ -99,13 +99,13 @@ if (whatToBuild === "lib") {
     });
   });
 
-  const PORT = 5501;
+  const PORT = 5511;
 
-  server.listen(5501, "r628.localhost");
+  //server.listen(PORT, "r628.localhost");
 
-  console.log(
-    `Dev server up and running! Check out http://r628.localhost${PORT}/demos-build/webgpu/graph-renderer.html`,
-  );
+  //console.log(
+  //`Dev server up and running! Check out http://r628.localhost:${PORT}/demos-build/webgpu/graph-renderer.html`,
+  //);
 
   const autoReloadPlugin: esbuild.Plugin = {
     name: "autoReload",

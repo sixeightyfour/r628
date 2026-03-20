@@ -23968,9 +23968,6 @@
   function mul3(a, b) {
     return [a[0] * b[0], a[1] * b[1], a[2] * b[2]];
   }
-  function mul4(a, b) {
-    return [a[0] * b[0], a[1] * b[1], a[2] * b[2], a[3] * b[3]];
-  }
   function div2(a, b) {
     return [a[0] / b[0], a[1] / b[1]];
   }
@@ -25643,7 +25640,7 @@ fn perlinNoise3(P: vec3f) -> f32 {
     }
   };
 
-  // raw-ns:/mnt/c/Users/baker/Documents/GitHub/r628/src/webgpu/simple-filter.wgsl?raw
+  // raw-ns:C:\Users\danny\OneDrive\Documents\GitHub\r628\src\webgpu\simple-filter.wgsl?raw
   var simple_filter_default = "/*TEXTURES*/\r\n\r\n/*TEXTURES*/\r\n\r\n\r\n/*GLOBALS*/\r\n\r\n/*GLOBALS*/\r\n\r\nstruct FragInput {\r\n  @builtin(position) position : vec4f,\r\n  @location(0) uv : vec2f,\r\n}\r\n\r\n@vertex\r\nfn VSMain(@builtin(vertex_index) vertexIndex: u32) -> FragInput {\r\n  var output: FragInput;\r\n\r\n  output.position = vec4(array(\r\n    vec2( 1.0,  1.0),\r\n    vec2( 1.0, -1.0),\r\n    vec2(-1.0, -1.0),\r\n    vec2( 1.0,  1.0),\r\n    vec2(-1.0, -1.0),\r\n    vec2(-1.0,  1.0),\r\n  )[vertexIndex], 0.5, 1.0);\r\n\r\n  output.uv = array(\r\n    vec2(1.0, 0.0),\r\n    vec2(1.0, 1.0),\r\n    vec2(0.0, 1.0),\r\n    vec2(1.0, 0.0),\r\n    vec2(0.0, 1.0),\r\n    vec2(0.0, 0.0),\r\n  )[vertexIndex];\r\n\r\n  return output;\r\n}\r\n\r\nstruct Output {\r\n/*OUTPUT_STRUCT*/\r\n\r\n/*OUTPUT_STRUCT*/\r\n}\r\n\r\n@fragment\r\nfn FSMain(@location(0) uv : vec2f) -> Output  {\r\n  /*FRAGMENT_BODY*/\r\n\r\n  /*FRAGMENT_BODY*/\r\n}";
 
   // src/webgpu/simple-filter.ts
@@ -27349,7 +27346,7 @@ dst = (pixel - params.blackEquiv) / (params.whiteEquiv - params.blackEquiv);
     };
   }
 
-  // raw-ns:/mnt/c/Users/baker/Documents/GitHub/r628/src/webgpu/gpudoc/gpudoc.css?raw
+  // raw-ns:C:\Users\danny\OneDrive\Documents\GitHub\r628\src\webgpu\gpudoc\gpudoc.css?raw
   var gpudoc_default = ':root {\r\n  --default-padding: 1rem;\r\n  --default-border: 1px solid #999;\r\n  --input-color: #000;\r\n  --red: #f66;\r\n  --green: #4f4;\r\n  --blue: #aaf;\r\n  --alpha: #bbb;\r\n}\r\n\r\n.gpudoc {\r\n  width: 100vw;\r\n  height: 100vh;\r\n  position: absolute;\r\n  top: 0;\r\n  left: 0;\r\n  z-index: 9999;\r\n  background-color: #121212;\r\n  color: white;\r\n  font-family: sans-serif;\r\n  border-right: var(--default-border);\r\n  display: grid;\r\n  grid-template-areas:\r\n    "tab-bar"\r\n    "tab";\r\n  grid-template-rows: max-content 1fr;\r\n  box-sizing: border-box;\r\n}\r\n\r\n.tex-thumbs {\r\n  display: grid;\r\n  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));\r\n  list-style: none;\r\n}\r\n\r\n.tex-thumbs li {\r\n  display: flex;\r\n  align-items: center;\r\n  flex-direction: column;\r\n  max-width: 350px;\r\n  padding: var(--default-padding);\r\n}\r\n\r\n.tex-thumbs .name {\r\n  font-weight: bold;\r\n  margin-bottom: var(--default-padding);\r\n}\r\n\r\n.tex-thumbs .canvas,\r\n.tex-thumbs canvas {\r\n  width: 100%;\r\n}\r\n\r\n.tab-bar {\r\n  font-size: 0.9em;\r\n  padding: 0;\r\n  margin: 0;\r\n  display: flex;\r\n  flex-wrap: wrap;\r\n  border-bottom: var(--default-border);\r\n  list-style: none;\r\n  grid-area: tab-bar;\r\n}\r\n\r\n.tab-bar li {\r\n  padding: calc(var(--default-padding) * 0.5);\r\n  border-right: var(--default-border);\r\n}\r\n\r\n.tab-bar li.selected {\r\n  background-color: #333;\r\n}\r\n\r\n.gpudoc .tab {\r\n  grid-area: tab;\r\n  height: 100%;\r\n}\r\n\r\n.tex-inspector {\r\n  height: 100%;\r\n  display: grid;\r\n  grid-template-areas: "canvas ui";\r\n}\r\n\r\n.tex-inspector > div:has(canvas) {\r\n  height: 100%;\r\n  grid-area: canvas;\r\n  position: relative;\r\n  overflow: hidden;\r\n}\r\n\r\n.tex-inspector canvas {\r\n  height: 100%;\r\n  width: 100%;\r\n}\r\n\r\n.tex-inspector .ui {\r\n  grid-area: ui;\r\n}\r\n\r\n.color-sliders {\r\n  display: grid;\r\n  grid-template-areas:\r\n    "darklabel lightlabel"\r\n    "dark light";\r\n}\r\n\r\n.color-sliders .dark,\r\n.color-sliders .light {\r\n  display: flex;\r\n  flex-direction: column;\r\n}\r\n\r\n.dark-label {\r\n  grid-area: darklabel;\r\n}\r\n.light-label {\r\n  grid-area: lightlabel;\r\n}\r\n\r\n.color-sliders .dark {\r\n  grid-area: dark;\r\n}\r\n.color-sliders .light {\r\n  grid-area: light;\r\n}\r\n\r\n.color-sliders input {\r\n  border: var(--default-border);\r\n  background-color: var(--input-color);\r\n  width: 4rem;\r\n}\r\n\r\n.color-sliders input:nth-child(1) {\r\n  color: var(--red);\r\n}\r\n.color-sliders input:nth-child(2) {\r\n  color: var(--green);\r\n}\r\n.color-sliders input:nth-child(3) {\r\n  color: var(--blue);\r\n}\r\n.color-sliders input:nth-child(4) {\r\n  color: var(--alpha);\r\n}\r\n\r\n.texel-inspector-window {\r\n  border: var(--default-border);\r\n  background-color: #121212;\r\n}\r\n\r\n.texel-marker {\r\n  border-radius: 3px;\r\n  border: 1px solid black;\r\n  outline: 1px solid white;\r\n}\r\n\r\n.line-segment {\r\n  border-radius: 3px;\r\n  border: 1px solid white;\r\n  background-color: black;\r\n}\r\n\r\n.texel-dragger {\r\n  width: 20px;\r\n  height: 20px;\r\n  transform: translate(-10px, -10px);\r\n  border-radius: 10px;\r\n  background-color: #0003;\r\n  border: 1px solid #fff8;\r\n}\r\n\r\n.dragger {\r\n  cursor: grab;\r\n}\r\n\r\n.texel-components {\r\n  display: grid;\r\n  grid-template-columns: repeat(4, 1fr);\r\n}\r\n\r\n.red {\r\n  color: var(--red);\r\n}\r\n.green {\r\n  color: var(--green);\r\n}\r\n.blue {\r\n  color: var(--blue);\r\n}\r\n.alpha {\r\n  color: var(--alpha);\r\n}\r\n';
 
   // node_modules/uuid/dist/stringify.js
@@ -28287,7 +28284,7 @@ dst = (pixel - params.blackEquiv) / (params.whiteEquiv - params.blackEquiv);
   var import_react19 = __toESM(require_react());
   var import_client3 = __toESM(require_client());
 
-  // raw-ns:/mnt/c/Users/baker/Documents/GitHub/r628/src/ui/r628-ui.css?raw
+  // raw-ns:C:\Users\danny\OneDrive\Documents\GitHub\r628\src\ui\r628-ui.css?raw
   var r628_ui_default = '@import url("https://rsms.me/inter/inter.css");\r\n\r\n:root {\r\n  --bg-darker: #000;\r\n  --bg: #181818;\r\n  --bg-lighter: #333;\r\n  --fg: #eee;\r\n  --border-color: #444;\r\n  --border: 1px solid var(--border-color);\r\n  --shadow: #0007;\r\n  --gap: 2px;\r\n  --gap-big: 5px;\r\n  --font: "InterVariable", sans-serif;\r\n  --highlight: orange;\r\n\r\n  --bg-button: #444;\r\n  --bg-button-hover: #555;\r\n}\r\n\r\ninput {\r\n  color: var(--fg);\r\n  border-radius: 5px;\r\n  border-width: 1px;\r\n  background-color: var(--bg-lighter);\r\n  border: none;\r\n}\r\n\r\n.ui-container {\r\n  background-color: var(--bg);\r\n  color: var(--fg);\r\n  font-family: var(--font);\r\n}\r\n\r\n.ui-array {\r\n  list-style: none;\r\n  padding-inline-start: 0;\r\n  margin-block: 0;\r\n}\r\n\r\n.ui-is-being-dragged > :not(.drag-destination) {\r\n  opacity: 0.5;\r\n}\r\n\r\n.ui-array-draggable > li {\r\n  position: relative;\r\n  padding-bottom: var(--gap);\r\n}\r\n\r\n.ui-array-draggable > li > .drag-source {\r\n  display: flex;\r\n  cursor: grab;\r\n}\r\n\r\n.ui-array-draggable .drag-destination {\r\n  width: 100%;\r\n  height: 0px;\r\n}\r\n\r\n.ui-array-draggable .ui-drag-dst {\r\n  width: 100%;\r\n  height: 0px;\r\n  position: absolute;\r\n  top: 0;\r\n  left: 0;\r\n}\r\n\r\n.ui-array-draggable .drag-float {\r\n  pointer-events: none;\r\n}\r\n\r\n.ui-drag-src {\r\n  width: 20px;\r\n  margin-right: var(--gap);\r\n\r\n  background-image: radial-gradient(\r\n    #555 0%,\r\n    #555 10%,\r\n    transparent 40%,\r\n    transparent 100%\r\n  );\r\n  background-size: 20% 20%;\r\n  background-position: center;\r\n}\r\n\r\n.ui-array-draggable .drag-active.drag-destination .ui-drag-dst {\r\n  height: 100%;\r\n  transform: translateY(-50%);\r\n}\r\n\r\n.ui-array-draggable .drag-active.drag-destination .ui-drag-dst:hover {\r\n  background-image: linear-gradient(\r\n    to bottom,\r\n    transparent 0%,\r\n    transparent 40%,\r\n    var(--highlight) 40%,\r\n    var(--highlight) 60%,\r\n    transparent 60%,\r\n    transparent 100%\r\n  );\r\n}\r\n\r\n.ui-object {\r\n  display: grid;\r\n  grid-template-columns: repeat(2, auto);\r\n  gap: var(--gap-big);\r\n}\r\n\r\n.ui-object > input {\r\n  justify-self: right;\r\n}\r\n\r\n.ui-container button {\r\n  background-color: var(--bg-button);\r\n  border: none;\r\n  border-radius: 5px;\r\n  color: var(--fg);\r\n  cursor: pointer;\r\n}\r\n\r\n.ui-container button:hover {\r\n  background-color: var(--bg-button-hover);\r\n}\r\n\r\n.ui-container button.selected {\r\n  background-color: var(--highlight);\r\n  color: black;\r\n}\r\n\r\n.enum-ui,\r\n.button-set {\r\n  display: flex;\r\n}\r\n\r\n:is(.enum-ui, .button-set) button {\r\n  margin-right: var(--gap-big);\r\n}\r\n:is(.enum-ui, .button-set) button:nth-last-child(1) {\r\n  margin-right: 0;\r\n}\r\n\r\n.button-set {\r\n  margin-block: var(--gap-big);\r\n}\r\n';
 
   // demos-src/webgpu/graph-renderer-ui.tsx
@@ -28311,7 +28308,11 @@ dst = (pixel - params.blackEquiv) / (params.whiteEquiv - params.blackEquiv);
     simulationAccuracy: 1 / 1.2,
     timestep: 0.06,
     tags: "",
-    positions: void 0
+    positions: void 0,
+    useNodeColors: true,
+    nodeColor: "#b4b4b4",
+    useEdgeColors: true,
+    edgeColor: "#7f7f7f"
   };
   function graphRendererUI(params) {
     const root = document.createElement("div");
@@ -28459,6 +28460,22 @@ h2 {
           ]
         }
       ), /* @__PURE__ */ import_react19.default.createElement("label", null, "Movement Speed"), /* @__PURE__ */ import_react19.default.createElement(NumberFieldM, { ...prop("viewerSpeed") }), /* @__PURE__ */ import_react19.default.createElement("label", null, "Line Thickness"), /* @__PURE__ */ import_react19.default.createElement(NumberFieldM, { ...prop("lineWidth") }), /* @__PURE__ */ import_react19.default.createElement("label", null, "Far Plane"), /* @__PURE__ */ import_react19.default.createElement(NumberFieldM, { ...prop("farPlane"), min: 0 }), /* @__PURE__ */ import_react19.default.createElement("label", null, "Show Label Threshold"), /* @__PURE__ */ import_react19.default.createElement(NumberFieldM, { ...prop("showLabelThreshold"), min: 0 })),
+      /* @__PURE__ */ import_react19.default.createElement("h2", null, "Appearance"),
+      /* @__PURE__ */ import_react19.default.createElement("div", { className: "ui-object" }, /* @__PURE__ */ import_react19.default.createElement("label", null, "Use Node Colors"), /* @__PURE__ */ import_react19.default.createElement(BooleanField, { ...prop("useNodeColors") }), /* @__PURE__ */ import_react19.default.createElement("label", null, "Node Color"), /* @__PURE__ */ import_react19.default.createElement(
+        "input",
+        {
+          type: "color",
+          value: state.state.nodeColor,
+          onChange: (e) => state.setState((s) => ({ ...s, nodeColor: e.target.value }))
+        }
+      ), /* @__PURE__ */ import_react19.default.createElement("label", null, "Use Edge Colors"), /* @__PURE__ */ import_react19.default.createElement(BooleanField, { ...prop("useEdgeColors") }), /* @__PURE__ */ import_react19.default.createElement("label", null, "Edge Color"), /* @__PURE__ */ import_react19.default.createElement(
+        "input",
+        {
+          type: "color",
+          value: state.state.edgeColor,
+          onChange: (e) => state.setState((s) => ({ ...s, edgeColor: e.target.value }))
+        }
+      )),
       /* @__PURE__ */ import_react19.default.createElement("h2", null, "Physics"),
       /* @__PURE__ */ import_react19.default.createElement("div", { className: "ui-object" }, /* @__PURE__ */ import_react19.default.createElement("label", null, "Physics Enabled"), /* @__PURE__ */ import_react19.default.createElement(BooleanField, { ...prop("physics") }), /* @__PURE__ */ import_react19.default.createElement("label", null, "Repulsion Multiplier"), /* @__PURE__ */ import_react19.default.createElement(NumberFieldM, { ...prop("repulsionMultiplier") }), /* @__PURE__ */ import_react19.default.createElement("label", null, "Repulsion Exponent"), /* @__PURE__ */ import_react19.default.createElement(NumberFieldM, { ...prop("repulsionExponent") }), /* @__PURE__ */ import_react19.default.createElement("label", null, "Attraction Multiplier"), /* @__PURE__ */ import_react19.default.createElement(NumberFieldM, { ...prop("attractionMultiplier") }), /* @__PURE__ */ import_react19.default.createElement("label", null, "Velocity Damping"), /* @__PURE__ */ import_react19.default.createElement(
         NumberFieldM,
@@ -29783,7 +29800,9 @@ h2 {
       struct("Edge", {
         src: "u32",
         dst: "u32",
-        color_mul: "f32"
+        color_mul: "f32",
+        use_custom_color: "u32",
+        color: "vec4f"
       })
     );
     const weightedEdgesBufferFormat = wdevice.storageBuffer(
@@ -29928,9 +29947,14 @@ fn set_point(idx: u32, across: f32, width: f32) {
       let margin = 0.8 / dist; 
       endpoint1 = mix(src.position, dst.position, margin);
       endpoint2 = mix(src.position, dst.position, 1 - margin);
-      color1 = src.color;
-      color2 = dst.color;
       color_mul = edges[i].color_mul;
+      if (edges[i].use_custom_color == 1u) {
+        color1 = edges[i].color;
+        color2 = edges[i].color;
+      } else {
+        color1 = src.color;
+        color2 = dst.color;
+      }
 
       set_point(ipt, 0.0, 1.0);
       set_point(ipt + 1, 0.1, 0.25);
@@ -30073,6 +30097,36 @@ user-select: none;
             tagCounts.set(tag, (tagCounts.get(tag) ?? 0) + 1);
           }
         }
+        function hexToRgba8(hex, fallback = [180, 180, 180, 255]) {
+          const clean = `${hex ?? ""}`.replace("#", "").trim();
+          if (!/^[0-9a-fA-F]{6}$/.test(clean)) return fallback;
+          const n = parseInt(clean, 16);
+          return [
+            n >> 16 & 255,
+            n >> 8 & 255,
+            n & 255,
+            255
+          ];
+        }
+        function rgba8ToVec4(color) {
+          return [
+            color[0] / 255,
+            color[1] / 255,
+            color[2] / 255,
+            color[3] / 255
+          ];
+        }
+        function edgeColorFromBase(color, factor) {
+          return [
+            color[0] * factor,
+            color[1] * factor,
+            color[2] * factor,
+            color[3]
+          ];
+        }
+        const fallbackNodeColor = hexToRgba8(params.ui.state.nodeColor);
+        const fallbackEdgeColor = hexToRgba8(params.ui.state.edgeColor);
+        const fallbackEdgeColorVec4 = rgba8ToVec4(fallbackEdgeColor);
         function getNodeColor(url) {
           const tags2 = urlToNodeData.get(url)?.tags ?? [];
           const tagWeights = tags2.map((t) => ({
@@ -30110,7 +30164,7 @@ user-select: none;
             url,
             addVertex(graph, {
               position: add3(position, [0, 0, 0]),
-              color: getNodeColor(url),
+              color: params.ui.state.useNodeColors ? getNodeColor(url) : fallbackNodeColor,
               initialized: false,
               label: slug,
               slug
@@ -30155,15 +30209,16 @@ user-select: none;
         const edgesFast = highPerfLineBufferFormat.quickCreate(
           [...graph.edges].flatMap((e) => {
             const factor = Math.random() * 0.2 + 0.4;
-            const colorMul = [factor, factor, factor, 1];
+            const srcColor = params.ui.state.useEdgeColors ? edgeColorFromBase(fallbackEdgeColor, factor) : edgeColorFromBase(e.endpoints[0].data.color, factor);
+            const dstColor = params.ui.state.useEdgeColors ? edgeColorFromBase(fallbackEdgeColor, factor) : edgeColorFromBase(e.endpoints[1].data.color, factor);
             return [
               {
                 position: e.endpoints[0].data.position,
-                color: mul4(e.endpoints[0].data.color, colorMul)
+                color: srcColor
               },
               {
                 position: e.endpoints[1].data.position,
-                color: mul4(e.endpoints[1].data.color, colorMul)
+                color: dstColor
               }
             ];
           })
@@ -30184,7 +30239,9 @@ user-select: none;
             unidirectionalEdgeList.push({
               src: startIndex,
               dst: endIndex,
-              color_mul: Math.random() * 0.3 + 0.3
+              color_mul: Math.random() * 0.3 + 0.3,
+              use_custom_color: params.ui.state.useEdgeColors ? 1 : 0,
+              color: fallbackEdgeColorVec4
             });
             if (startIndex === endIndex) continue;
             const weight = 1;

@@ -6,7 +6,7 @@
   <body>
     <script>
       if (window.location.hostname === "r628.localhost") {
-        const socket = new WebSocket("ws://r628.localhost:5501/changes");
+        const socket = new WebSocket("ws://r628.localhost:5511/changes");
         socket.addEventListener("message", () => {
           window.location.reload();
         });
