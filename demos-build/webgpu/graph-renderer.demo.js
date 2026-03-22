@@ -28353,7 +28353,8 @@ dst = (pixel - params.blackEquiv) / (params.whiteEquiv - params.blackEquiv);
     };
     const ret = {
       dom: root,
-      state: obj.state
+      state: obj.state,
+      setState
     };
     return ret;
   }
