@@ -50,6 +50,26 @@ type Node = {
   slug: string;
 };
 
+type LoadedGraphNode = {
+  id: string;
+  kind: string;
+  label: string;
+  title: string;
+  url: string;
+  tags?: string[];
+  rating?: number | null;
+  parent?: string | null;
+  x: number;
+  y: number;
+  z: number;
+};
+
+type LoadedGraphEdge = {
+  source: string;
+  target: string;
+  kind: string;
+};
+
 export async function setupGraphRenderer(device: GPUDevice) {
   const canvas = document.createElement("canvas");
   canvas.style =
@@ -562,17 +582,20 @@ user-select: none;
         .filter((t) => t.length > 0);
 
       let positiveTags = tags.filter((t) => t[0] !== "!");
-      let negativeTags = tags
-        .filter((t) => t[0] === "!")
-        ?.map((t) => t.slice(1));
+      let negativeTags = tags.filter((t) => t[0] === "!").map((t) => t.slice(1));
 
       const graph: Graph<Node, Vec4> = createGraph();
 
-      let graphData = await (
-        await fetch("../assets/crosslinksv3_(RELOADED).json")
-      ).json();
+      const graphData = (await (
+        await fetch("../assets/scp-graph.json")
+      ).json()) as {
+        generatedAt: string;
+        counts: Record<string, number>;
+        nodes: LoadedGraphNode[];
+        edges: LoadedGraphEdge[];
+      };
 
-      graphData = graphData
+      const filteredNodes = graphData.nodes
         .filter(
           (g) =>
             typeof g.x === "number" &&
@@ -585,31 +608,37 @@ user-select: none;
         .filter(
           (g) =>
             (positiveTags.length === 0 ||
-              g.tags?.some((t) => positiveTags.includes(t))) &&
+              (g.tags ?? []).some((t) => positiveTags.includes(t))) &&
             (negativeTags.length === 0 ||
-              !g.tags?.some((t) => negativeTags.includes(t))),
+              !(g.tags ?? []).some((t) => negativeTags.includes(t))),
         );
 
-      let nodeMap = new Map<string, Vertex<Node, Vec4>>();
+      const allowedNodeIds = new Set(filteredNodes.map((n) => n.id));
 
+      const filteredEdges = graphData.edges.filter(
+        (e) => allowedNodeIds.has(e.source) && allowedNodeIds.has(e.target),
+      );
+
+      let nodeMap = new Map<string, Vertex<Node, Vec4>>();
+      let idToUrl = new Map<string, string>();
       let urlToNodeData = new Map<string, { tags: string[] }>();
 
-      for (const n of graphData) {
+      for (const n of filteredNodes) {
+        idToUrl.set(n.id, n.url);
         urlToNodeData.set(n.url, {
-          tags: n.tags,
+          tags: n.tags ?? [],
         });
       }
 
       let tagCounts = new Map<string, number>();
 
-      for (const [url, { tags }] of urlToNodeData) {
+      for (const [, { tags }] of urlToNodeData) {
         for (const tag of tags) {
           tagCounts.set(tag, (tagCounts.get(tag) ?? 0) + 1);
         }
       }
 
-
-            function hexToRgba8(
+      function hexToRgba8(
         hex: string | undefined,
         fallback: Vec4 = [180, 180, 180, 255],
       ): Vec4 {
@@ -617,36 +646,9 @@ user-select: none;
         if (!/^[0-9a-fA-F]{6}$/.test(clean)) return fallback;
 
         const n = parseInt(clean, 16);
-        return [
-          (n >> 16) & 255,
-          (n >> 8) & 255,
-          n & 255,
-          255,
-        ];
+        return [(n >> 16) & 255, (n >> 8) & 255, n & 255, 255];
       }
 
-      function rgba8ToVec4(color: Vec4): Vec4 {
-        return [
-          color[0] / 255,
-          color[1] / 255,
-          color[2] / 255,
-          color[3] / 255,
-        ];
-      }
-
-      function edgeColorFromBase(color: Vec4, factor: number): Vec4 {
-        return [
-          color[0] * factor,
-          color[1] * factor,
-          color[2] * factor,
-          color[3],
-        ];
-      }
-
-      const fallbackNodeColor = hexToRgba8(params.ui.state.nodeColor);
-      const fallbackEdgeColor = hexToRgba8(params.ui.state.edgeColor);
-      const fallbackEdgeColorVec4 = rgba8ToVec4(fallbackEdgeColor);
-      
       function getNodeColor(url: string): Vec4 {
         const tags = urlToNodeData.get(url)?.tags ?? [];
         const tagWeights = tags.map((t) => ({
@@ -679,24 +681,31 @@ user-select: none;
         return [...sum, 255];
       }
 
+      const fallbackNodeColor = hexToRgba8(params.ui.state.nodeColor);
+      const fallbackEdgeColor: Vec4 = hexToRgba8(params.ui.state.edgeColor, [
+        127, 127, 127, 255,
+      ]);
+
       const customPositions = params.ui.state.positions;
       console.log("custom positions", customPositions);
 
       const nodePositions: PositionedNode[] = customPositions
         ? JSON.parse(await customPositions.text())
-        : graphData.map((g) => ({
+        : filteredNodes.map((g) => ({
             position: scale3([g.x, g.y, g.z], 0.005),
-            slug: g.url.replace("http://scp-wiki.wikidot.com/", "").trim(),
+            slug: g.url.replace(/^https?:\/\/scp-wiki\.wikidot\.com\//, "").trim(),
           }));
 
       for (const { position, slug } of nodePositions) {
-        const url = `http://scp-wiki.wikidot.com/${slug}`;
+        const url = `https://scp-wiki.wikidot.com/${slug}`;
 
         nodeMap.set(
           url,
           addVertex(graph, {
             position: add3(position, [0, 0, 0]),
-            color: params.ui.state.useNodeColors ? getNodeColor(url) : fallbackNodeColor,
+            color: params.ui.state.useNodeColors
+              ? getNodeColor(url)
+              : fallbackNodeColor,
             initialized: false,
             label: slug,
             slug,
@@ -704,23 +713,24 @@ user-select: none;
         );
       }
 
-      for (const n of graphData) {
-        for (const link of n.other) {
-          const src = nodeMap.get(n.url.trim());
-          const dst = nodeMap.get(link.trim());
+      for (const edge of filteredEdges) {
+        const srcUrl = idToUrl.get(edge.source);
+        const dstUrl = idToUrl.get(edge.target);
 
-          if (!src) {
-            // console.warn(`Endpoint '${n.url}' not found.`);
-            continue;
-          }
-          if (!dst) {
-            // console.warn(`Endpoint '${link}' not found.`);
-            continue;
-          }
+        if (!srcUrl || !dstUrl) continue;
 
-          addEdge(graph, [src, dst], [127, 127, 127, 255]);
-        }
+        const src = nodeMap.get(srcUrl.trim());
+        const dst = nodeMap.get(dstUrl.trim());
+
+        if (!src || !dst) continue;
+
+        addEdge(graph, [src, dst], fallbackEdgeColor);
       }
+
+      console.log("edges", graph.edges);
+
+      return graph;
+    }
 
       console.log("edges", graph.edges);
 
