@@ -729,7 +729,6 @@ user-select: none;
 
       console.log("edges", graph.edges);
 
-      return graph;
     }
 
       console.log("edges", graph.edges);
