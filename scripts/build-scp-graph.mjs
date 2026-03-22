@@ -144,9 +144,35 @@ async function loadContentMap(section) {
   const map = new Map();
 
   for (const relPath of Object.values(contentIndex)) {
-    const chunkUrl = new URL(relPath, contentIndexUrl).toString();
+    if (typeof relPath !== "string" || !relPath.trim()) continue;
+
+    let chunkUrl;
+
+    if (/^https?:\/\//i.test(relPath)) {
+      chunkUrl = relPath;
+    } else if (relPath.startsWith("/")) {
+      // Bad upstream absolute filesystem path; try to recover by using basename.
+      const fileName = relPath.split("/").pop();
+      if (!fileName) continue;
+      chunkUrl = `${API_ROOT}/${section}/${fileName}`;
+      console.warn(
+        `[build-scp-graph] recovered bad ${section} content path "${relPath}" -> "${chunkUrl}"`,
+      );
+    } else {
+      chunkUrl = new URL(relPath, contentIndexUrl).toString();
+    }
+
     log(`fetching content chunk: ${chunkUrl}`);
-    const chunk = await fetchJson(chunkUrl);
+
+    let chunk;
+    try {
+      chunk = await fetchJson(chunkUrl);
+    } catch (err) {
+      console.warn(
+        `[build-scp-graph] skipping unreadable ${section} content chunk: ${chunkUrl}`,
+      );
+      continue;
+    }
 
     for (const [key, value] of Object.entries(chunk)) {
       const slug = normalizeSlug(value?.link ?? key);

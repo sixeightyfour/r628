@@ -30076,45 +30076,32 @@ user-select: none;
       async createGraph(params) {
         let tags = params.ui.state.tags.split(",").map((t) => t.trim()).filter((t) => t.length > 0);
         let positiveTags = tags.filter((t) => t[0] !== "!");
-        let negativeTags = tags.filter((t) => t[0] === "!")?.map((t) => t.slice(1));
+        let negativeTags = tags.filter((t) => t[0] === "!").map((t) => t.slice(1));
         const graph = createGraph();
-        let graphData = await (await fetch("../assets/crosslinksv3_(RELOADED).json")).json();
-        graphData = graphData.filter(
+        const graphData = await (await fetch("../assets/scp-graph.json")).json();
+        const filteredNodes = graphData.nodes.filter(
           (g) => typeof g.x === "number" && typeof g.y === "number" && typeof g.z === "number" && !isNaN(g.x) && !isNaN(g.y) && !isNaN(g.z)
         ).filter(
-          (g) => (positiveTags.length === 0 || g.tags?.some((t) => positiveTags.includes(t))) && (negativeTags.length === 0 || !g.tags?.some((t) => negativeTags.includes(t)))
+          (g) => (positiveTags.length === 0 || (g.tags ?? []).some((t) => positiveTags.includes(t))) && (negativeTags.length === 0 || !(g.tags ?? []).some((t) => negativeTags.includes(t)))
+        );
+        const allowedNodeIds = new Set(filteredNodes.map((n) => n.id));
+        const filteredEdges = graphData.edges.filter(
+          (e) => allowedNodeIds.has(e.source) && allowedNodeIds.has(e.target)
         );
         let nodeMap = /* @__PURE__ */ new Map();
+        let idToUrl = /* @__PURE__ */ new Map();
         let urlToNodeData = /* @__PURE__ */ new Map();
-        for (const n of graphData) {
+        for (const n of filteredNodes) {
+          idToUrl.set(n.id, n.url);
           urlToNodeData.set(n.url, {
-            tags: n.tags
+            tags: n.tags ?? []
           });
         }
         let tagCounts = /* @__PURE__ */ new Map();
-        for (const [url, { tags: tags2 }] of urlToNodeData) {
+        for (const [, { tags: tags2 }] of urlToNodeData) {
           for (const tag of tags2) {
             tagCounts.set(tag, (tagCounts.get(tag) ?? 0) + 1);
           }
-        }
-        function hexToRgba8(hex, fallback = [180, 180, 180, 255]) {
-          const clean = `${hex ?? ""}`.replace("#", "").trim();
-          if (!/^[0-9a-fA-F]{6}$/.test(clean)) return fallback;
-          const n = parseInt(clean, 16);
-          return [
-            n >> 16 & 255,
-            n >> 8 & 255,
-            n & 255,
-            255
-          ];
-        }
-        function rgba8ToVec4(color) {
-          return [
-            color[0] / 255,
-            color[1] / 255,
-            color[2] / 255,
-            color[3] / 255
-          ];
         }
         function edgeColorFromBase(color, factor) {
           return [
@@ -30124,9 +30111,12 @@ user-select: none;
             color[3]
           ];
         }
-        const fallbackNodeColor = hexToRgba8(params.ui.state.nodeColor);
-        const fallbackEdgeColor = hexToRgba8(params.ui.state.edgeColor);
-        const fallbackEdgeColorVec4 = rgba8ToVec4(fallbackEdgeColor);
+        function hexToRgba8(hex, fallback = [180, 180, 180, 255]) {
+          const clean = `${hex ?? ""}`.replace("#", "").trim();
+          if (!/^[0-9a-fA-F]{6}$/.test(clean)) return fallback;
+          const n = parseInt(clean, 16);
+          return [n >> 16 & 255, n >> 8 & 255, n & 255, 255];
+        }
         function getNodeColor(url) {
           const tags2 = urlToNodeData.get(url)?.tags ?? [];
           const tagWeights = tags2.map((t) => ({
@@ -30152,14 +30142,27 @@ user-select: none;
           }
           return [...sum, 255];
         }
+        const fallbackNodeColor = hexToRgba8(params.ui.state.nodeColor);
+        const fallbackEdgeColor = hexToRgba8(params.ui.state.edgeColor, [
+          127,
+          127,
+          127,
+          255
+        ]);
+        const fallbackEdgeColorVec4 = [
+          fallbackEdgeColor[0] / 255,
+          fallbackEdgeColor[1] / 255,
+          fallbackEdgeColor[2] / 255,
+          fallbackEdgeColor[3] / 255
+        ];
         const customPositions = params.ui.state.positions;
         console.log("custom positions", customPositions);
-        const nodePositions = customPositions ? JSON.parse(await customPositions.text()) : graphData.map((g) => ({
+        const nodePositions = customPositions ? JSON.parse(await customPositions.text()) : filteredNodes.map((g) => ({
           position: scale3([g.x, g.y, g.z], 5e-3),
-          slug: g.url.replace("http://scp-wiki.wikidot.com/", "").trim()
+          slug: g.url.replace(/^https?:\/\/scp-wiki\.wikidot\.com\//, "").trim()
         }));
         for (const { position, slug } of nodePositions) {
-          const url = `http://scp-wiki.wikidot.com/${slug}`;
+          const url = `https://scp-wiki.wikidot.com/${slug}`;
           nodeMap.set(
             url,
             addVertex(graph, {
@@ -30171,18 +30174,14 @@ user-select: none;
             })
           );
         }
-        for (const n of graphData) {
-          for (const link of n.other) {
-            const src = nodeMap.get(n.url.trim());
-            const dst = nodeMap.get(link.trim());
-            if (!src) {
-              continue;
-            }
-            if (!dst) {
-              continue;
-            }
-            addEdge(graph, [src, dst], [127, 127, 127, 255]);
-          }
+        for (const edge of filteredEdges) {
+          const srcUrl = idToUrl.get(edge.source);
+          const dstUrl = idToUrl.get(edge.target);
+          if (!srcUrl || !dstUrl) continue;
+          const src = nodeMap.get(srcUrl.trim());
+          const dst = nodeMap.get(dstUrl.trim());
+          if (!src || !dst) continue;
+          addEdge(graph, [src, dst], fallbackEdgeColor);
         }
         console.log("edges", graph.edges);
         const labelVertsArray = [...graph.vertices].map((vert) => ({
