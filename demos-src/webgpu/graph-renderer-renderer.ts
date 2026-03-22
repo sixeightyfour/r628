@@ -638,6 +638,15 @@ user-select: none;
         }
       }
 
+      function edgeColorFromBase(color: Vec4, factor: number): Vec4 {
+        return [
+          color[0] * factor,
+          color[1] * factor,
+          color[2] * factor,
+          color[3],
+        ];
+      }
+      
       function hexToRgba8(
         hex: string | undefined,
         fallback: Vec4 = [180, 180, 180, 255],
@@ -686,6 +695,13 @@ user-select: none;
         127, 127, 127, 255,
       ]);
 
+      const fallbackEdgeColorVec4: Vec4 = [
+        fallbackEdgeColor[0] / 255,
+        fallbackEdgeColor[1] / 255,
+        fallbackEdgeColor[2] / 255,
+        fallbackEdgeColor[3] / 255,
+      ];
+
       const customPositions = params.ui.state.positions;
       console.log("custom positions", customPositions);
 
@@ -726,10 +742,6 @@ user-select: none;
 
         addEdge(graph, [src, dst], fallbackEdgeColor);
       }
-
-      console.log("edges", graph.edges);
-
-    }
 
       console.log("edges", graph.edges);
 
