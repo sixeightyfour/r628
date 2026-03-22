@@ -619,6 +619,12 @@ user-select: none;
         (e) => allowedNodeIds.has(e.source) && allowedNodeIds.has(e.target),
       );
 
+      params.ui.setState((s) => ({
+        ...s,
+        nodeCount: filteredNodes.length,
+        edgeCount: filteredEdges.length,
+      }));
+      
       let nodeMap = new Map<string, Vertex<Node, Vec4>>();
       let idToUrl = new Map<string, string>();
       let urlToNodeData = new Map<string, { tags: string[] }>();
