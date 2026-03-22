@@ -41,6 +41,7 @@
   },
   "scripts": {
     "prepublishOnly": "bun run build"
+    "update:scp-graph": "node scripts/build-scp-graph.mjs"
   },
   "name": "r628",
   "version": "0.1.20"
