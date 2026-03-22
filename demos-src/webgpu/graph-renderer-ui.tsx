@@ -117,9 +117,10 @@ export function graphRendererUI(params: {
     setState,
   };
 
-  const ret = {
+  const ret: GraphRendererUI = {
     dom: root,
     state: obj.state,
+    setState,
   };
 
   return ret;
