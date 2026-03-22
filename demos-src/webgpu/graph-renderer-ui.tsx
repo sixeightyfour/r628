@@ -320,11 +320,9 @@ h2 {
           <NumberFieldM {...prop("timestep")} min={0}></NumberFieldM>
         </div>
         <h2>Initial Conditions</h2>
-        <div>
-          Nodes: {state.nodeCount.toLocaleString()}
-        </div>
-        <div>
-          Edges: {state.edgeCount.toLocaleString()}
+        <div className="ui-object">
+          <label>Nodes: {state.nodeCount.toLocaleString()}</label>
+          <label>Edges: {state.edgeCount.toLocaleString()}</label>
         </div>
         <div className="ui-object">
           <label>Tags</label>
