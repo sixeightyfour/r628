@@ -28308,6 +28308,8 @@ dst = (pixel - params.blackEquiv) / (params.whiteEquiv - params.blackEquiv);
     simulationAccuracy: 1 / 1.2,
     timestep: 0.06,
     tags: "",
+    nodeCount: 0,
+    edgeCount: 0,
     positions: void 0,
     useNodeColors: true,
     nodeColor: "#b4b4b4",
@@ -28486,6 +28488,7 @@ h2 {
         }
       ), /* @__PURE__ */ import_react19.default.createElement("label", null, "Simulation Accuracy"), /* @__PURE__ */ import_react19.default.createElement(NumberFieldM, { ...prop("simulationAccuracy"), min: 0 }), /* @__PURE__ */ import_react19.default.createElement("label", null, "Timestep"), /* @__PURE__ */ import_react19.default.createElement(NumberFieldM, { ...prop("timestep"), min: 0 })),
       /* @__PURE__ */ import_react19.default.createElement("h2", null, "Initial Conditions"),
+      /* @__PURE__ */ import_react19.default.createElement("div", { className: "ui-object" }, /* @__PURE__ */ import_react19.default.createElement("label", null, "Nodes: ", state.nodeCount.toLocaleString()), /* @__PURE__ */ import_react19.default.createElement("label", null, "Edges: ", state.edgeCount.toLocaleString())),
       /* @__PURE__ */ import_react19.default.createElement("div", { className: "ui-object" }, /* @__PURE__ */ import_react19.default.createElement("label", null, "Tags"), /* @__PURE__ */ import_react19.default.createElement(StringFieldM, { ...prop("tags") }), /* @__PURE__ */ import_react19.default.createElement("label", null, "Positions"), /* @__PURE__ */ import_react19.default.createElement(FileField, { ...prop("positions") })),
       /* @__PURE__ */ import_react19.default.createElement("div", { className: "button-set" }, /* @__PURE__ */ import_react19.default.createElement("button", { onClick: props.updateRenderer }, "Apply Initial Conditions"), /* @__PURE__ */ import_react19.default.createElement(
         "button",
@@ -30088,6 +30091,11 @@ user-select: none;
         const filteredEdges = graphData.edges.filter(
           (e) => allowedNodeIds.has(e.source) && allowedNodeIds.has(e.target)
         );
+        params.ui.setState((s) => ({
+          ...s,
+          nodeCount: filteredNodes.length,
+          edgeCount: filteredEdges.length
+        }));
         let nodeMap = /* @__PURE__ */ new Map();
         let idToUrl = /* @__PURE__ */ new Map();
         let urlToNodeData = /* @__PURE__ */ new Map();
