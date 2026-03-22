@@ -108,6 +108,31 @@ function previousPositionMap(previousGraph) {
   return map;
 }
 
+function normalizeTags(value) {
+  if (Array.isArray(value)) {
+    return [
+      ...new Set(
+        value
+          .map((t) => String(t).trim().toLowerCase())
+          .filter(Boolean),
+      ),
+    ];
+  }
+
+  if (typeof value === "string") {
+    return [
+      ...new Set(
+        value
+          .split(",")
+          .map((t) => t.trim().toLowerCase())
+          .filter(Boolean),
+      ),
+    ];
+  }
+
+  return [];
+}
+
 function dedupeStrings(values) {
   return [...new Set((values || []).filter(Boolean).map(String))];
 }
@@ -196,7 +221,7 @@ function upsertNode(store, id, patch = {}) {
       label: patch.label ?? id,
       title: patch.title ?? patch.label ?? id,
       url: patch.url ?? slugToUrl(id),
-      tags: new Set(patch.tags ?? []),
+      tags: new Set(normalizeTags(patch.tags)),
       rating: patch.rating ?? null,
       parent: patch.parent ?? null,
     });
@@ -211,8 +236,8 @@ function upsertNode(store, id, patch = {}) {
   if (patch.rating != null && node.rating == null) node.rating = patch.rating;
   if (patch.parent && !node.parent) node.parent = patch.parent;
 
-  for (const tag of patch.tags ?? []) {
-    node.tags.add(tag);
+  for (const tag of normalizeTags(patch.tags)) {
+  node.tags.add(tag);
   }
 
   return node;
@@ -241,7 +266,7 @@ function ingestSection(nodes, edges, kind, dataset) {
       label: raw?.title ?? slug,
       title: raw?.title ?? slug,
       url: slugToUrl(slug),
-      tags: raw?.tags ?? [],
+      tags: normalizeTags(raw?.tags),
       rating: raw?.rating ?? null,
     });
 
