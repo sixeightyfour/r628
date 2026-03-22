@@ -33,6 +33,8 @@ export type UIState = {
   timestep: number;
   tags: string;
   positions: Blob | undefined;
+  nodeCount: number;
+  edgeCount: number;
 
   useNodeColors: boolean;
   nodeColor: string;
@@ -54,6 +56,8 @@ const DEFAULT_UI_STATE: UIState = {
   simulationAccuracy: 1 / 1.2,
   timestep: 0.06,
   tags: "",
+  nodeCount: 0,
+  edgeCount: 0,
   positions: undefined,
 
   useNodeColors: true,
@@ -316,6 +320,12 @@ h2 {
           <NumberFieldM {...prop("timestep")} min={0}></NumberFieldM>
         </div>
         <h2>Initial Conditions</h2>
+        <div>
+          Nodes: {state.nodeCount.toLocaleString()}
+        </div>
+        <div>
+          Edges: {state.edgeCount.toLocaleString()}
+        </div>
         <div className="ui-object">
           <label>Tags</label>
           <StringFieldM {...prop("tags")}></StringFieldM>
