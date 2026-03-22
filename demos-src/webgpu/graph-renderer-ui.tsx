@@ -322,8 +322,8 @@ h2 {
         </div>
         <h2>Initial Conditions</h2>
         <div className="ui-object">
-          <label>Nodes: {state.nodeCount.toLocaleString()}</label>
-          <label>Edges: {state.edgeCount.toLocaleString()}</label>
+          <label>Nodes: {state.state.nodeCount.toLocaleString()}</label>
+          <label>Edges: {state.state.edgeCount.toLocaleString()}</label>
         </div>
         <div className="ui-object">
           <label>Tags</label>
