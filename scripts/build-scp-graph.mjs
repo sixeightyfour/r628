@@ -14,7 +14,7 @@ function log(...args) {
 async function fetchJson(url) {
   const res = await fetch(url, {
     headers: {
-      "user-agent": "r628-scp-graph-builder/1.0 (+github-actions)",
+      "user-agent": "r628-scp-graph-builder/1.2 (+github-actions)",
       accept: "application/json,text/plain,*/*",
     },
   });
@@ -108,13 +108,15 @@ function previousPositionMap(previousGraph) {
   return map;
 }
 
+function dedupeStrings(values) {
+  return [...new Set((values || []).filter(Boolean).map(String))];
+}
+
 function normalizeTags(value) {
   if (Array.isArray(value)) {
     return [
       ...new Set(
-        value
-          .map((t) => String(t).trim().toLowerCase())
-          .filter(Boolean),
+        value.map((t) => String(t).trim().toLowerCase()).filter(Boolean),
       ),
     ];
   }
@@ -131,10 +133,6 @@ function normalizeTags(value) {
   }
 
   return [];
-}
-
-function dedupeStrings(values) {
-  return [...new Set((values || []).filter(Boolean).map(String))];
 }
 
 function extractFragmentSlugs(text) {
@@ -176,7 +174,6 @@ async function loadContentMap(section) {
     if (/^https?:\/\//i.test(relPath)) {
       chunkUrl = relPath;
     } else if (relPath.startsWith("/")) {
-      // Bad upstream absolute filesystem path; try to recover by using basename.
       const fileName = relPath.split("/").pop();
       if (!fileName) continue;
       chunkUrl = `${API_ROOT}/${section}/${fileName}`;
@@ -192,7 +189,7 @@ async function loadContentMap(section) {
     let chunk;
     try {
       chunk = await fetchJson(chunkUrl);
-    } catch (err) {
+    } catch {
       console.warn(
         `[build-scp-graph] skipping unreadable ${section} content chunk: ${chunkUrl}`,
       );
@@ -224,6 +221,7 @@ function upsertNode(store, id, patch = {}) {
       tags: new Set(normalizeTags(patch.tags)),
       rating: patch.rating ?? null,
       parent: patch.parent ?? null,
+      has_metadata: patch.has_metadata ?? false,
     });
   }
 
@@ -235,9 +233,10 @@ function upsertNode(store, id, patch = {}) {
   if (patch.url && !node.url) node.url = patch.url;
   if (patch.rating != null && node.rating == null) node.rating = patch.rating;
   if (patch.parent && !node.parent) node.parent = patch.parent;
+  if (patch.has_metadata) node.has_metadata = true;
 
   for (const tag of normalizeTags(patch.tags)) {
-  node.tags.add(tag);
+    node.tags.add(tag);
   }
 
   return node;
@@ -268,6 +267,7 @@ function ingestSection(nodes, edges, kind, dataset) {
       url: slugToUrl(slug),
       tags: normalizeTags(raw?.tags),
       rating: raw?.rating ?? null,
+      has_metadata: true,
     });
 
     if (!slug.startsWith("fragment:")) {
@@ -318,10 +318,7 @@ function ingestSection(nodes, edges, kind, dataset) {
 function addFragmentsFromContent(nodes, edges, contentMap) {
   for (const [parentSlug, contentObj] of contentMap.entries()) {
     const text =
-      contentObj?.raw_source ??
-      contentObj?.raw_content ??
-      contentObj?.content ??
-      "";
+      contentObj?.raw_source ?? contentObj?.raw_content ?? contentObj?.content ?? "";
 
     const fragmentSlugs = extractFragmentSlugs(text);
 
@@ -332,6 +329,7 @@ function addFragmentsFromContent(nodes, edges, contentMap) {
         title: fragmentSlug,
         parent: parentSlug,
         tags: ["fragment"],
+        has_metadata: true,
       });
 
       addEdge(edges, fragmentSlug, parentSlug, "fragment_of");
@@ -369,6 +367,7 @@ async function main() {
   addFragmentsFromContent(nodes, edges, talesContent);
 
   const finalNodes = [...nodes.values()]
+    .filter((node) => node.has_metadata)
     .map((node) => {
       const pos = prevPositions.get(node.id) ?? deterministicPosition(node.id);
 
@@ -378,7 +377,7 @@ async function main() {
         label: node.label,
         title: node.title,
         url: node.url,
-        tags: dedupeStrings([...node.tags]),
+        tags: dedupeStrings([...node.tags]).sort(),
         rating: node.rating,
         parent: node.parent,
         x: pos.x,
