@@ -813,6 +813,8 @@ user-select: none;
         src: number;
         dst: number;
         color_mul: number;
+        use_custom_color: number;
+        color: Vec4;
       }[] = [];
 
       const edgeLocMap: {
