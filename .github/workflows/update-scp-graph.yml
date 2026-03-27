@@ -1,37 +1,55 @@
-name: Update SCP graph
+name: Sync SCP data
 
 on:
   workflow_dispatch:
   schedule:
-    - cron: "30 7 * * *"
+    - cron: "30 5 * * *"
 
 permissions:
   contents: write
 
 jobs:
-  update-graph:
+  sync-scp-data:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Check out repo
-        uses: actions/checkout@v4
+      - name: Checkout current repo
+        uses: actions/checkout@v6
 
-      - name: Set up Node
-        uses: actions/setup-node@v4
+      - name: Checkout SCP data repo
+        uses: actions/checkout@v6
         with:
-          node-version: 20
-          cache: npm
+          repository: sixeightyfour/scp-json-sync
+          path: scp-json-sync
 
-      - name: Install dependencies
-        run: npm ci
+      - name: Prepare destination folders
+        run: |
+          mkdir -p data/scp/merged
 
-      - name: Build SCP graph JSON
-        run: npm run update:scp-graph
+      - name: Copy merged JSON
+        run: |
+          if [ -f scp-json-sync/output/merged/all_pages.json ]; then
+            cp scp-json-sync/output/merged/all_pages.json data/scp/merged/all_pages.json
+          else
+            echo "Missing merged file: scp-json-sync/output/merged/all_pages.json"
+            exit 1
+          fi
 
-      - name: Commit updated graph
+      - name: Show copied files
+        run: |
+          echo "Copied files:"
+          find data/scp -type f | sort
+
+      - name: Commit and push if changed
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add demos-build/assets/scp-graph.json
-          git diff --cached --quiet || git commit -m "Update SCP graph data"
-          git push
+
+          git add data/scp
+
+          if git diff --cached --quiet; then
+            echo "No changes to commit"
+          else
+            git commit -m "Sync SCP data"
+            git push
+          fi
