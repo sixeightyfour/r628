@@ -24,12 +24,12 @@ jobs:
 
       - name: Prepare destination folders
         run: |
-          mkdir -p data/scp/merged
+          mkdir -p demos-build/assets/
 
       - name: Copy merged JSON
         run: |
           if [ -f scp-json-sync/output/merged/all_pages.json ]; then
-            cp scp-json-sync/output/merged/all_pages.json data/scp/merged/all_pages.json
+            cp scp-json-sync/output/merged/all_pages.json demos-build/assets/all_pages.json
           else
             echo "Missing merged file: scp-json-sync/output/merged/all_pages.json"
             exit 1
@@ -38,7 +38,7 @@ jobs:
       - name: Show copied files
         run: |
           echo "Copied files:"
-          find data/scp -type f | sort
+          find demos-build/assets -type f | sort
 
       - name: Commit and push if changed
         run: |
