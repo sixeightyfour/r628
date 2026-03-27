@@ -30082,7 +30082,7 @@ user-select: none;
         let positiveTags = tags.filter((t) => t[0] !== "!");
         let negativeTags = tags.filter((t) => t[0] === "!").map((t) => t.slice(1));
         const graph = createGraph();
-        const graphData = await (await fetch("../../data/scp/merged/all_pages.json")).json();
+        const graphData = await (await fetch("../assets/all_pages.json")).json();
         const filteredNodes = graphData.nodes.filter(
           (g) => typeof g.x === "number" && typeof g.y === "number" && typeof g.z === "number" && !isNaN(g.x) && !isNaN(g.y) && !isNaN(g.z)
         ).filter(
