@@ -35,6 +35,25 @@ jobs:
             exit 1
           fi
 
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Build graph asset
+        run: |
+          node scripts/build-graph-from-pages.mjs
+
+      - name: Validate graph asset
+        run: |
+          node -e "
+            const fs = require('fs');
+            const g = JSON.parse(fs.readFileSync('demos-build/assets/graph_from_pages.json', 'utf8'));
+            if (!Array.isArray(g.nodes)) throw new Error('nodes missing');
+            if (!Array.isArray(g.edges)) throw new Error('edges missing');
+            console.log('graph asset valid:', g.nodes.length, 'nodes', g.edges.length, 'edges');
+          "
+
       - name: Show copied files
         run: |
           echo "Copied files:"
@@ -45,7 +64,7 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
 
-          git add demos-build/assets/all_pages.json
+          git add demos-build/assets/all_pages.json demos-build/assets/graph_from_pages.json
 
           if git diff --cached --quiet; then
             echo "No changes to commit"
