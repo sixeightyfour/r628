@@ -30082,16 +30082,31 @@ user-select: none;
         let positiveTags = tags.filter((t) => t[0] !== "!");
         let negativeTags = tags.filter((t) => t[0] === "!").map((t) => t.slice(1));
         const graph = createGraph();
-        const graphData = await (await fetch("../assets/all_pages.json")).json();
-        const filteredNodes = graphData.nodes.filter(
-          (g) => typeof g.x === "number" && typeof g.y === "number" && typeof g.z === "number" && !isNaN(g.x) && !isNaN(g.y) && !isNaN(g.z)
+        const graphData = await (await fetch("../assets/graph_from_pages.json")).json();
+
+        const nodes = Array.isArray(graphData?.nodes) ? graphData.nodes : [];
+        const edges = Array.isArray(graphData?.edges) ? graphData.edges : [];
+
+        const filteredNodes = nodes.filter(
+          (g) =>
+            typeof g.x === "number" &&
+            typeof g.y === "number" &&
+            typeof g.z === "number" &&
+            !isNaN(g.x) &&
+            !isNaN(g.y) &&
+            !isNaN(g.z)
         ).filter(
-          (g) => (positiveTags.length === 0 || (g.tags ?? []).some((t) => positiveTags.includes(t))) && (negativeTags.length === 0 || !(g.tags ?? []).some((t) => negativeTags.includes(t)))
+          (g) =>
+            (positiveTags.length === 0 || (g.tags ?? []).some((t) => positiveTags.includes(t))) &&
+            (negativeTags.length === 0 || !(g.tags ?? []).some((t) => negativeTags.includes(t)))
         );
+
         const allowedNodeIds = new Set(filteredNodes.map((n) => n.id));
-        const filteredEdges = graphData.edges.filter(
+
+        const filteredEdges = edges.filter(
           (e) => allowedNodeIds.has(e.source) && allowedNodeIds.has(e.target)
         );
+        
         params.ui.setState((s) => ({
           ...s,
           nodeCount: filteredNodes.length,
