@@ -30084,10 +30084,10 @@ user-select: none;
         const graph = createGraph();
         const graphData = await (await fetch("../assets/graph_from_pages.json")).json();
 
-        const nodes = Array.isArray(graphData?.nodes) ? graphData.nodes : [];
-        const edges = Array.isArray(graphData?.edges) ? graphData.edges : [];
+        const graphNodes = Array.isArray(graphData?.nodes) ? graphData.nodes : [];
+        const graphEdges = Array.isArray(graphData?.edges) ? graphData.edges : [];
 
-        const filteredNodes = nodes.filter(
+        const filteredNodes = graphNodes.filter(
           (g) =>
             typeof g.x === "number" &&
             typeof g.y === "number" &&
@@ -30103,7 +30103,7 @@ user-select: none;
 
         const allowedNodeIds = new Set(filteredNodes.map((n) => n.id));
 
-        const filteredEdges = edges.filter(
+        const filteredEdges = graphEdges.filter(
           (e) => allowedNodeIds.has(e.source) && allowedNodeIds.has(e.target)
         );
         
